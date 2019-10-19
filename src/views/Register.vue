@@ -23,6 +23,7 @@
                       prepend-icon="mdi-account-badge-horizontal"
                       v-model="accountInfo.fullname"
                     ></v-text-field>
+
                     <v-text-field
                       label="Username"
                       prepend-icon="mdi-account"
@@ -40,7 +41,12 @@
                       prepend-icon="mdi-email"
                       v-model="accountInfo.email"
                     ></v-text-field>
-                    <v-btn block dark color="deep-purple accent-4" type="submit"
+                    <v-btn
+                      block
+                      dark
+                      color="deep-purple accent-4"
+                      type="submit"
+                      :loading="btnLoading"
                       >Register</v-btn
                     >
                   </v-form>
@@ -51,10 +57,41 @@
         </v-col>
       </v-row>
     </v-container>
+
+    <v-snackbar v-model="snackbarSuccess" :timeout="0" bottom color="success">
+      <span>{{ snackbarMessage }}</span>
+      <v-btn
+        text
+        color="white"
+        @click="
+          {
+            snackbarSuccess = false
+            snackbarMessage = ''
+          }
+        "
+        >Close</v-btn
+      >
+    </v-snackbar>
+
+    <v-snackbar v-model="snackbarError" :timeout="0" bottom color="error">
+      <span>{{ snackbarMessage }}</span>
+      <v-btn
+        text
+        color="white"
+        @click="
+          {
+            snackbarError = false
+            snackbarMessage = ''
+          }
+        "
+        >Close</v-btn
+      >
+    </v-snackbar>
   </div>
 </template>
 
 <script>
+import ApiService from '@/services/api.service'
 export default {
   name: 'Register',
   data() {
@@ -64,14 +101,31 @@ export default {
         username: '',
         password: '',
         email: ''
-      }
+      },
+      snackbarSuccess: false,
+      snackbarError: false,
+      snackbarMessage: '',
+      btnLoading: false
     }
   },
   methods: {
     validateForm() {
       // call $validator
       // post to API
-      console.log(JSON.stringify(this.accountInfo))
+      this.btnLoading = true
+      ApiService.post('/account/register', {
+        ...this.accountInfo
+      })
+        .then(res => {
+          this.btnLoading = false
+          this.snackbarSuccess = true
+          this.snackbarMessage = res.data.message
+        })
+        .catch(err => {
+          this.btnLoading = false
+          this.snackbarError = true
+          this.snackbarMessage = err.response.data.message
+        })
     }
   }
 }
