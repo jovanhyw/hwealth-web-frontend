@@ -6,51 +6,54 @@
           <v-img src="/img/doctors.svg"></v-img>
         </v-col>
 
-        <v-col cols="6">
-          <v-container>
-            <v-row>
-              <v-col>
-                <v-row justify="center">
-                  <span
-                    class="display-1 font-weight-bold font-weight-black font-italic blue-grey--text"
-                    >Register with us!</span
+        <v-col cols="4" offset="1">
+          <v-container fluid>
+            <v-row no-gutters>
+              <v-col align="center">
+                <v-card shaped class="elevation-4">
+                  <v-card-title
+                    class="display-1 font-weight-bold font-weight-black font-italic blue-grey--text justify-center"
+                    >Register with us!</v-card-title
                   >
-                </v-row>
-                <v-row>
-                  <v-form @submit.prevent="validateForm">
-                    <v-text-field
-                      label="Full Name"
-                      prepend-icon="mdi-account-badge-horizontal"
-                      v-model="accountInfo.fullname"
-                    ></v-text-field>
 
-                    <v-text-field
-                      label="Username"
-                      prepend-icon="mdi-account"
-                      v-model="accountInfo.username"
-                    ></v-text-field>
-                    <v-text-field
-                      label="Password"
-                      prepend-icon="mdi-lock"
-                      type="password"
-                      autocomplete="off"
-                      v-model="accountInfo.password"
-                    ></v-text-field>
-                    <v-text-field
-                      label="Email"
-                      prepend-icon="mdi-email"
-                      v-model="accountInfo.email"
-                    ></v-text-field>
-                    <v-btn
-                      block
-                      dark
-                      color="deep-purple accent-4"
-                      type="submit"
-                      :loading="btnLoading"
-                      >Register</v-btn
-                    >
-                  </v-form>
-                </v-row>
+                  <v-divider></v-divider>
+
+                  <v-card-text>
+                    <v-form @submit.prevent="validateForm">
+                      <v-text-field
+                        label="Full Name"
+                        prepend-icon="mdi-account-badge-horizontal"
+                        v-model="accountInfo.fullname"
+                      ></v-text-field>
+
+                      <v-text-field
+                        label="Username"
+                        prepend-icon="mdi-account"
+                        v-model="accountInfo.username"
+                      ></v-text-field>
+                      <v-text-field
+                        label="Password"
+                        prepend-icon="mdi-lock"
+                        type="password"
+                        autocomplete="off"
+                        v-model="accountInfo.password"
+                      ></v-text-field>
+                      <v-text-field
+                        label="Email"
+                        prepend-icon="mdi-email"
+                        v-model="accountInfo.email"
+                      ></v-text-field>
+                      <v-btn
+                        block
+                        dark
+                        color="deep-purple accent-4"
+                        type="submit"
+                        :loading="btnLoading"
+                        >Register</v-btn
+                      >
+                    </v-form>
+                  </v-card-text>
+                </v-card>
               </v-col>
             </v-row>
           </v-container>
@@ -131,4 +134,9 @@ export default {
 }
 </script>
 
-<style></style>
+<style scoped>
+.v-card {
+  border-left: 4px solid #6200ea;
+  border-right: 4px solid #6200ea;
+}
+</style>
