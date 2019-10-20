@@ -95,6 +95,7 @@
 
 <script>
 import ApiService from '@/services/api.service'
+
 export default {
   name: 'Register',
   data() {
