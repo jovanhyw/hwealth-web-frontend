@@ -89,6 +89,11 @@ export default {
           icon: 'mdi-stairs',
           text: 'Steps Record',
           route: '/steps-record'
+        },
+        {
+          icon: 'mdi-chat',
+          text: 'Chats',
+          route: '/chats'
         }
       ],
       mini: true
