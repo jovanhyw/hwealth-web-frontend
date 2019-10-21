@@ -1,9 +1,15 @@
 <template>
   <nav>
     <!-- Public Top Navbar -->
-    <v-app-bar color="deep-purple accent-4" dark class="px-12">
+    <v-app-bar color="deep-purple accent-4" dark app class="px-12">
+      <v-btn icon @click.stop="mini = !mini">
+        <v-icon>mdi-chevron-left</v-icon>
+      </v-btn>
+      <!-- Hamburger -->
+      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+
       <!-- Brand Logo -->
-      <v-app-bar-nav-icon class="ml-4">
+      <v-app-bar-nav-icon>
         <v-avatar>
           <v-img src="favicon-32x32.png"></v-img>
         </v-avatar>
@@ -27,6 +33,31 @@
       >
       <v-btn text rounded class="ma-1" @click="logout">Logout</v-btn>
     </v-app-bar>
+
+    <!-- Side Navbar -->
+    <v-navigation-drawer
+      v-model="drawer"
+      color="deep-purple accent-4"
+      dark
+      app
+      :mini-variant.sync="mini"
+    >
+      <v-list>
+        <v-list-item
+          v-for="link in sideNavLinks"
+          :key="link.text"
+          router
+          :to="link.route"
+        >
+          <v-list-item-icon>
+            <v-icon>{{ link.icon }}</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>{{ link.text }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
   </nav>
 </template>
 
@@ -41,7 +72,26 @@ export default {
         { text: 'Home', route: '/' },
         { text: 'About', route: '/about' },
         { text: 'Settings', route: '/settings' }
-      ]
+      ],
+      drawer: true,
+      sideNavLinks: [
+        {
+          icon: 'mdi-view-dashboard',
+          text: 'Dashboard',
+          route: '/dashboard'
+        },
+        {
+          icon: 'mdi-food',
+          text: 'Calories Record',
+          route: '/calories-record'
+        },
+        {
+          icon: 'mdi-stairs',
+          text: 'Steps Record',
+          route: '/steps-record'
+        }
+      ],
+      mini: true
     }
   },
   methods: {
