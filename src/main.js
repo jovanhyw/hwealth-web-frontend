@@ -12,6 +12,7 @@ Vue.config.productionTip = false
 // Initialise API URL Path for Axios HTTP calls
 ApiService.init(process.env.VUE_APP_API_URL)
 
+
 // Vee-Validate stuff
 extend('required', {
   ...required,

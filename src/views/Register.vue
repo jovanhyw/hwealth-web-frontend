@@ -49,6 +49,7 @@
                         color="deep-purple accent-4"
                         type="submit"
                         :loading="btnLoading"
+                        large
                         >Register</v-btn
                       >
                     </v-form>

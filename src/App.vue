@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <NavbarPublic />
+    <NavbarPrivate />
 
     <v-content>
       <v-container>
@@ -11,11 +11,11 @@
 </template>
 
 <script>
-import NavbarPublic from '@/components/NavbarPublic'
+import NavbarPrivate from '@/components/NavbarPrivate'
 export default {
   name: 'App',
   components: {
-    NavbarPublic
+    NavbarPrivate
   },
   data: () => ({})
 }
