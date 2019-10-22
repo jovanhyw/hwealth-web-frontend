@@ -3,37 +3,55 @@
     <v-container>
       <v-row>
         <v-col cols="6">
-          <v-img src="/img/doctors.svg"></v-img>
+          <v-img src="/img/medicine.svg"></v-img>
         </v-col>
 
-        <v-col cols="5" offset="1">
-          <v-form @submit.prevent="validateLogin">
-          <v-row>
-            <v-col>
-              <v-text-field
-              label="Username" solo
-              v-model="account.username"
-              ></v-text-field>
-            </v-col>
-            <v-col>
-              <v-text-field
-              v-model="account.password"
-              label="Password" solo
-              type="password"
-              ></v-text-field>   
-              <a v-bind:href="url"> <p class="mt-n5"><i>Forget password?</i></p> </a>
-            </v-col>
-            <v-col cols="1">
-            <v-btn large type="submit" :loading="btnLoading">Log in</v-btn>
-            </v-col>
-          </v-row>
-          </v-form>
+        <v-col cols="4" offset="1">
+          <v-container fluid>
+            <v-row no-gutters>
+              <v-col align="center">
+                <v-card shaped class="elevation-4">
+                  <v-card-title
+                    class="display-1 font-weight-bold font-weight-black font-italic blue-grey--text justify-center"
+                    >Login</v-card-title
+                  >
+
+                  <v-divider></v-divider>
+
+                  <v-card-text>
+                    <v-form @submit.prevent="login">
+                      <v-text-field
+                        label="Username"
+                        prepend-icon="mdi-account"
+                        v-model="username"
+                      ></v-text-field>
+                      <v-text-field
+                        label="Password"
+                        prepend-icon="mdi-lock"
+                        type="password"
+                        autocomplete="off"
+                        v-model="password"
+                      ></v-text-field>
+
+                      <v-btn
+                        block
+                        dark
+                        color="deep-purple accent-4"
+                        type="submit"
+                        :loading="btnLoading"
+                        >Login</v-btn
+                      >
+                    </v-form>
+                  </v-card-text>
+                </v-card>
+              </v-col>
+            </v-row>
+          </v-container>
         </v-col>
-        
       </v-row>
     </v-container>
 
-      <v-snackbar v-model="snackbarError" :timeout="0" bottom color="error">
+    <v-snackbar v-model="snackbarError" :timeout="0" bottom color="error">
       <span>{{ snackbarMessage }}</span>
       <v-btn
         text
@@ -47,57 +65,33 @@
         >Close</v-btn
       >
     </v-snackbar>
-
-    <v-snackbar v-model="snackbarSuccess" :timeout="0" bottom color="success">
-      <span>{{ snackbarMessage }}</span>
-      <v-btn
-        text
-        color="white"
-        @click="
-          {
-            snackbarSuccess = false
-            snackbarMessage = ''
-          }
-        "
-        >Close</v-btn
-      >
-    </v-snackbar>
-   
   </div>
 </template>
 
 
 <script>
-import ApiService from '@/services/api.service'
+import { LOGIN } from '../store/modules/actions.type'
+
 export default {
-  name:'Login',
-  data(){
+  name: 'Login',
+  data() {
     return {
-      account: {
-        username: '',
-        password: ''
-      },
-      snackbarSuccess: false,
+      username: '',
+      password: '',
       snackbarError: false,
       snackbarMessage: '',
-      btnLoading: false,
-      url: "#"
+      btnLoading: false
     }
   },
-  methods:{
-      validateLogin() {
-      // call $validator
-      // post to API
+  methods: {
+    login() {
+      let username = this.username
+      let password = this.password
       this.btnLoading = true
-      ApiService.post('/auth/login', {
-        ...this.account
-      })
-        .then(res => {
+      this.$store
+        .dispatch(LOGIN, { username, password })
+        .then(() => {
           this.btnLoading = false
-          this.snackbarSuccess = true
-          this.snackbarMessage = res.data
-          console.log("hit")
-          console.log(res)
         })
         .catch(err => {
           this.btnLoading = false
@@ -105,9 +99,13 @@ export default {
           this.snackbarMessage = err.response.data.message
         })
     }
-
   }
 }
 </script>
-<style>
+
+<style scoped>
+.v-card {
+  border-left: 4px solid #6200ea;
+  border-right: 4px solid #6200ea;
+}
 </style>
