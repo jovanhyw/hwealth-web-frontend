@@ -6,7 +6,7 @@
 	<h1> Settings </h1>
 	<v-divider></v-divider>
 	<br>
-	
+	<h1>{{getUserProfile.profile.fullname}}</h1>
   <v-card>
 	<v-toolbar flat color="primary" dark>
 	  <v-toolbar-title>General Account Settings</v-toolbar-title>
@@ -23,7 +23,6 @@
 
 	  <v-tab-item>
 		<v-card flat>
-		  
 				<v-form>
 					<v-container>
 						<h1>Profile</h1>
@@ -61,11 +60,11 @@
 						<v-row class="mt-n6">
 							<v-col cols="12" sm="6">
 								<v-text-field
-									v-model="mobileno"
+									v-model="phoneno"
 									label="Phone number"
 									outlined
 									:disabled=disableField1			
-								></v-text-field>
+								>12312312</v-text-field>
 							</v-col>
 						</v-row>
 						<v-row class="mt-n6">
@@ -211,11 +210,20 @@
 
 <script>
 //import ApiService from '@/services/api.service'
+import { mapGetters, mapActions } from "vuex";
 export default {
-  name: 'settings',
+	name: 'settings',
 	components: {},
   data: () => ({
 		date: new Date().toISOString().substr(0, 10),
+		username: '',
+		fullname: '',
+		email: '',
+
+		dob: '',
+		currentPwd: '',
+		newPwd: '',
+		confirmPwd: '',
 		dateMenu: false,
 		disableField1: true,
 		disableButton1: false,
@@ -223,22 +231,16 @@ export default {
 		disableButton2: false,
 		twofaButton: true,
 	}),
+	computed: mapGetters(['getUserProfile']),
+	created() {
 
-	// created() {
-	// 	console.log("created call");
-	// 	ApiService
-  //   axios.get('https://jsonplaceholder.typicode.com/todos?_limit=10')
-  //   // .then(res => this.todos = res.data)
-  //   // .catch(err => console.log(err));
-  // },
-	
+		// var data = getUserProfile
+		// this.username = data.profile.username
+
+	},
 	methods: {
-		
-
+		...mapActions(['fetchUserProfile'])
 	}
-
-	
-
 	
 
 }
