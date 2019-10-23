@@ -83,7 +83,7 @@ export default {
       ApiService.post(
         '/account/reset-password?token=' + this.$route.query.token,
         {
-          ...this.newPassword
+          newPassword: this.newPassword
         }
       )
         .then(res => {
