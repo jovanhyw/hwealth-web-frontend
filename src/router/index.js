@@ -23,6 +23,11 @@ const routes = [
     path: '/login',
     name: 'login',
     component: () => import('@/views/Login')
+  },
+  {
+    path: '/account/reset-password',
+    name: 'reset-password',
+    component: () => import('@/views/ResetPassword')
   }
 ]
 
