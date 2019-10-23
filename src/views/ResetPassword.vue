@@ -31,6 +31,36 @@
         </v-row>
       </v-col>
     </v-row>
+
+    <v-snackbar v-model="snackbarSuccess" :timeout="0" bottom color="success">
+      <span>{{ snackbarMessage }}</span>
+      <v-btn
+        text
+        color="white"
+        @click="
+          {
+            snackbarSuccess = false
+            snackbarMessage = ''
+          }
+        "
+        >Close</v-btn
+      >
+    </v-snackbar>
+
+    <v-snackbar v-model="snackbarError" :timeout="0" bottom color="error">
+      <span>{{ snackbarMessage }}</span>
+      <v-btn
+        text
+        color="white"
+        @click="
+          {
+            snackbarError = false
+            snackbarMessage = ''
+          }
+        "
+        >Close</v-btn
+      >
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -41,7 +71,11 @@ export default {
   name: 'ResetPassword',
   data() {
     return {
-      newPassword: ''
+      newPassword: '',
+      snackbarSuccess: false,
+      snackbarError: false,
+      snackbarMessage: '',
+      btnLoading: false
     }
   },
   methods: {
@@ -52,8 +86,16 @@ export default {
           ...this.newPassword
         }
       )
-        .then(res => console.log(res))
-        .catch(err => console.log(err))
+        .then(res => {
+          this.btnLoading = false
+          this.snackbarSuccess = true
+          this.snackbarMessage = res.data.message
+        })
+        .catch(err => {
+          this.btnLoading = false
+          this.snackbarError = true
+          this.snackbarMessage = err.response.data.message
+        })
     }
   }
 }
