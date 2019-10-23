@@ -68,7 +68,6 @@
   </div>
 </template>
 
-
 <script>
 import { LOGIN } from '../store/modules/actions.type'
 

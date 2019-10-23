@@ -2,8 +2,8 @@ import axios from 'axios'
 import { TokenService } from './storage.service'
 
 const ApiService = {
-  init() {
-    axios.defaults.baseURL = "http://localhost:3000/api"
+  init(baseURL) {
+    axios.defaults.baseURL = baseURL
   },
 
   setHeader() {

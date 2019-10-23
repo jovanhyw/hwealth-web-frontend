@@ -8,7 +8,7 @@ const state = {
     profile: {
       fullname: ''
     }
-  },
+  }
 }
 
 const mutations = {
@@ -22,15 +22,14 @@ const getters = {
 }
 
 const actions = {
-  
-  fetchUserProfile({ commit }){
-    ApiService.setHeader();
+  fetchUserProfile({ commit }) {
+    ApiService.setHeader()
     ApiService.get('/profile')
-      .then(res=> {
+      .then(res => {
         console.log(res.data.profile)
-        commit('setUserProfile', res.data); 
+        commit('setUserProfile', res.data)
       })
-      .catch(err=> console.log(err))
+      .catch(err => console.log(err))
   }
 }
 

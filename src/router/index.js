@@ -33,9 +33,7 @@ const routes = [
     path: '/settings',
     name: 'settings',
     component: () => import('@/views/Settings')
-  },
-  
-
+  }
 ]
 
 const router = new VueRouter({

@@ -27,13 +27,8 @@
       >
     </v-app-bar>
   </nav>
-  <nav v-else>
-    
-  </nav>
+  <nav v-else></nav>
 </template>
-
-
-
 
 <script>
 export default {

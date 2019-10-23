@@ -11,7 +11,7 @@
       <!-- Brand Logo -->
       <v-app-bar-nav-icon>
         <v-avatar>
-          <v-img src="favicon-32x32.png"></v-img>
+          <v-img src="/favicon-32x32.png"></v-img>
         </v-avatar>
       </v-app-bar-nav-icon>
 
