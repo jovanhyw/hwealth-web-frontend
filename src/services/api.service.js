@@ -2,8 +2,8 @@ import axios from 'axios'
 import { TokenService } from './storage.service'
 
 const ApiService = {
-  init(baseURL) {
-    axios.defaults.baseURL = baseURL
+  init() {
+    axios.defaults.baseURL = "https://hwealth.herokuapp.com/api"
   },
 
   setHeader() {
