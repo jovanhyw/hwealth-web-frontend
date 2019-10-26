@@ -178,19 +178,60 @@
                 You may need to download and install the Google Authenticator
                 App first before you can use this functionality.
               </p>
+              <div v-if="showQrImage">
+                <p> <b>Step 1:</b> Scan this QR code with your mobile app: </p> 
+                <img :src="qrImage" >
+                <p> <b>Step 2:</b>To confirm the third party app is set up correctly, enter the security code that appears on your phone. </p>
+                 <v-row class="mb-n6">
+                  <v-col cols="12" sm="6">
+                    <v-text-field
+                      v-model="securityCode"
+                      label="Security Code"
+                      outlined
+                      :maxlength="6"
+                    ></v-text-field>
+                  </v-col>
+              </v-row>
+              </div>
+              
+              <v-row class="mb-n6" v-if="!showQrImage">
+                  <v-col cols="12" sm="6">
+                    <v-text-field
+                      v-model="tfapassword"
+                      label="Password"
+                      outlined
+                      :type="'password'"
+                      :maxlength="25"
+                    ></v-text-field>
+                  </v-col>
+              </v-row>
 
               <v-row>
                 <v-col cols="12" sm="6">
                   <v-btn
-                    v-if="twofaButton"
+                    v-if="enableButton"
+                    :disabled="twofaButtonSwitch"
+                    :loading="twofaButtonLoading"
+                    class="mr-2"
                     color="success"
-                    @click="twofaButton = !twofaButton"
+                    @click="enableTwoFa"
+
                     >enable</v-btn
                   >
+                  
                   <v-btn
-                    v-else
+                    v-show="confirmButtonShow"
+                    class="mr-2"
                     color="warning"
-                    @click="twofaButton = !twofaButton"
+                    :loading="confirmLoading"
+                    @click="confirmSecurityCode"
+                    >confirm</v-btn
+                  >
+
+                  <v-btn
+                    class="mr-2"
+                    color="error"
+                    @click="disableTwoFa"
                     >disable</v-btn
                   >
                 </v-col>
@@ -238,6 +279,9 @@
 
 <script>
 import ApiService from '@/services/api.service'
+import { TokenService } from '@/services/storage.service'
+const QRCode = require('qrcode');
+
 export default {
   name: 'settings',
   components: {},
@@ -256,19 +300,29 @@ export default {
     disableButton1: false,
     disableField2: true,
     disableButton2: false,
-    twofaButton: true,
+    enableButton: true,
     profileLoading: false,
     changePwdLoading: false,
     snackbarSuccess: false,
     snackbarError: false,
     snackbarMessage: '',
-
+    tfapassword: '',
+    qrImage: '',
+    tempSecret: '',
+    showQrImage: false,
+    twofaButtonSwitch: false,
+    twofaButtonLoading: false,
+    securityCode: '',
+    confirmLoading: false,
+    confirmButtonShow: false
   }),
   created() {
     // var data = getUserProfile
     // this.username = data.profile.username
     this.getProfile()
     this.getUsername()
+    
+    
   },
   methods: {
     getUsername() {
@@ -341,8 +395,118 @@ export default {
       }
 
     },
+    generateQr(otpAuth){
+      var url = otpAuth
+      var qrImg = ''
+      QRCode.toDataURL(url, (err, dataURL) => {
+       qrImg = dataURL;
+      })
+      return qrImg;
+    },
     enableTwoFa(){
+      var user = this.$store.getters.getCurrentUser
+      console.log(user.twoFactorEnabled)
+      // check if password is not empty
+      if( this.tfapassword != ''){
+        const data = {
+          "password": this.tfapassword
+        }
+        this.twofaButtonLoading = true;
+        this.tfapassword = ''
+        ApiService.post('two-factor/get-authenticator', data)
+        .then(res => {
+          this.twofaButtonLoading = false;
+          this.twofaButtonSwitch = true;
+          this.confirmButtonShow = true;
+          console.log(res.data)
+          const otpAuth = res.data.secret.otpauth_url
+          const qrImg = this.generateQr(otpAuth);
+          if (qrImg != ''){
+            this.tempSecret = res.data.secret.base32
+            this.qrImage = qrImg
+            this.showQrImage = true
+          } else {
+            this.snackbarError = true
+            this.snackbarMessage = "QR Image failed to generate."
+          }
+        })
+        .catch(err => {
+          this.twofaButtonLoading = false;
+          this.snackbarError = true
+          this.snackbarMessage = err.response.data.message
+        })
 
+      } else {
+        this.snackbarError = true
+        this.snackbarMessage = "Password field is empty. Please try again."
+      }
+    },
+
+    confirmSecurityCode(){
+      if (this.securityCode != ''){
+          const data = {
+          "secret": this.tempSecret,
+          "token": this.securityCode
+        }
+        this.securityCode = '';
+        this.confirmLoading = true
+        console.log(data)
+        ApiService.post('two-factor/enable', data)
+        .then( res => {
+          this.confirmLoading = false
+          this.enableButton = false
+          this.confirmButtonShow = false
+          //show 
+          const token = res.data.token
+          // update token into local storage
+          TokenService.removeToken()
+          ApiService.removeHeader()
+          TokenService.saveToken(token)
+          ApiService.setHeader()
+
+          console.log(res.data.message)
+          this.snackbarSuccess = true
+          this.snackbarMessage = res.data.message  
+          this.showQrImage = false
+          
+        })
+        .catch(err => {
+          this.confirmLoading = false
+          this.snackbarError = true
+          this.snackbarMessage = err.response.data.message
+        })
+
+      } else{
+        this.snackbarError = true
+        this.snackbarMessage = "Security code field is empty. Please try again."
+      }
+
+    },
+    disableTwoFa(){
+      if (this.password != ''){
+          const data = {
+          "password": this.tfapassword
+        }
+        this.password = ''
+        ApiService.post('/two-factor/disable', data)
+        .then(res => {
+          console.log('DEBUG:', res)
+          if(res.data.error == false){
+            // disabled and switch disable to enable button
+            this.snackbarSuccess = true
+            this.snackbarMessage = res.data.message  
+          }
+
+        })
+        .catch(err => {
+          this.confirmLoading = false
+          this.snackbarError = true
+          this.snackbarMessage = err.response.data.message
+        })
+      } else{
+        this.snackbarError = true
+        this.snackbarMessage = "Password field is empty. Please try again."
+      }
     }
   }
 }

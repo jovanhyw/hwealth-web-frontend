@@ -23,6 +23,7 @@ const mutations = {
     TokenService.removeToken()
     ApiService.removeHeader()
   }
+
 }
 
 const getters = {
