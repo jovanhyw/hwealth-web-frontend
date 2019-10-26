@@ -25,6 +25,7 @@ const routes = [
     component: () => import('@/views/Login')
   },
   {
+<<<<<<< HEAD
     path: '/dashboard',
     name: 'dashboard',
     component: () => import('@/views/Dashboard')
@@ -33,6 +34,11 @@ const routes = [
     path: '/settings',
     name: 'settings',
     component: () => import('@/views/Settings')
+=======
+    path: '/account/reset-password',
+    name: 'reset-password',
+    component: () => import('@/views/ResetPassword')
+>>>>>>> b4f6b789bfe995320e944c940e5da5edc98af38b
   }
 ]
 

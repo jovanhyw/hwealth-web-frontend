@@ -5,7 +5,7 @@
       <!-- Brand Logo -->
       <v-app-bar-nav-icon class="ml-4">
         <v-avatar>
-          <v-img src="favicon-32x32.png"></v-img>
+          <v-img src="/favicon-32x32.png"></v-img>
         </v-avatar>
       </v-app-bar-nav-icon>
 
