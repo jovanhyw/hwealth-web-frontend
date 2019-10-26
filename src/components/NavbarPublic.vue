@@ -1,5 +1,5 @@
 <template>
-  <nav>
+  <nav v-if="loggedIn == false">
     <!-- Public Top Navbar -->
     <v-app-bar color="deep-purple accent-4" dark class="px-12">
       <!-- Brand Logo -->
@@ -27,6 +27,7 @@
       >
     </v-app-bar>
   </nav>
+  <nav v-else></nav>
 </template>
 
 <script>
@@ -39,7 +40,8 @@ export default {
         { text: 'About', route: '/about' },
         { text: 'Register', route: '/register' },
         { text: 'Login', route: '/login' }
-      ]
+      ],
+      loggedIn: false
     }
   }
 }

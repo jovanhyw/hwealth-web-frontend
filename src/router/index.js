@@ -25,6 +25,16 @@ const routes = [
     component: () => import('@/views/Login')
   },
   {
+    path: '/dashboard',
+    name: 'dashboard',
+    component: () => import('@/views/Dashboard')
+  },
+  {
+    path: '/settings',
+    name: 'settings',
+    component: () => import('@/views/Settings')
+  },
+  {
     path: '/account/reset-password',
     name: 'reset-password',
     component: () => import('@/views/ResetPassword')
