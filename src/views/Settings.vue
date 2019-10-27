@@ -209,7 +209,7 @@
               <v-row>
                 <v-col cols="12" sm="6">
                   <v-btn
-                    v-if="enableButton"
+                    v-show="!tfa_state"
                     :disabled="twofaButtonSwitch"
                     :loading="twofaButtonLoading"
                     class="mr-2"
@@ -229,6 +229,7 @@
                   >
 
                   <v-btn
+                    v-show="tfa_state"
                     class="mr-2"
                     color="error"
                     @click="disableTwoFa"
@@ -272,6 +273,36 @@
       >
     </v-snackbar>
 
+    <!-- modal -->
+    <v-row justify="center">
+    <v-dialog
+      v-model="dialog"
+      max-width="350"
+    >
+      <v-card>
+        <v-card-title class="headline">Recovery Code</v-card-title>
+
+        <v-card-text>
+          Please write down or memorise the recovery code. This code will allow you to recover your account in case of you lost access to the authenticator app.
+          <br><br>
+          <b>{{ this.recoveryCode }}</b>       
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn
+            color="green darken-1"
+            text
+            @click="dialog = false"
+          >
+            OK
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-row>
+
   </div>
 
 
@@ -314,15 +345,15 @@ export default {
     twofaButtonLoading: false,
     securityCode: '',
     confirmLoading: false,
-    confirmButtonShow: false
+    confirmButtonShow: false,
+    tfa_state: TokenService.getTfaState() == 'false' ? false : true,
+    dialog: false,
+    recoveryCode: ''
   }),
   created() {
-    // var data = getUserProfile
-    // this.username = data.profile.username
     this.getProfile()
     this.getUsername()
-    
-    
+
   },
   methods: {
     getUsername() {
@@ -350,7 +381,6 @@ export default {
       this.profileLoading = true
       ApiService.put('profile/update-profile', data)
       .then(res => {
-        console.log(res)
         this.disableField1 = !this.disableField1
         this.disableButton1 = !this.disableButton1
         this.profileLoading = false
@@ -404,8 +434,6 @@ export default {
       return qrImg;
     },
     enableTwoFa(){
-      var user = this.$store.getters.getCurrentUser
-      console.log(user.twoFactorEnabled)
       // check if password is not empty
       if( this.tfapassword != ''){
         const data = {
@@ -418,7 +446,6 @@ export default {
           this.twofaButtonLoading = false;
           this.twofaButtonSwitch = true;
           this.confirmButtonShow = true;
-          console.log(res.data)
           const otpAuth = res.data.secret.otpauth_url
           const qrImg = this.generateQr(otpAuth);
           if (qrImg != ''){
@@ -450,24 +477,26 @@ export default {
         }
         this.securityCode = '';
         this.confirmLoading = true
-        console.log(data)
         ApiService.post('two-factor/enable', data)
         .then( res => {
           this.confirmLoading = false
-          this.enableButton = false
+          // change user state
+          //this.enableButton = false
+          TokenService.setTfaState(true)
+          this.tfa_state = true
           this.confirmButtonShow = false
-          //show 
+
           const token = res.data.token
           // update token into local storage
           TokenService.removeToken()
           ApiService.removeHeader()
           TokenService.saveToken(token)
           ApiService.setHeader()
-
-          console.log(res.data.message)
           this.snackbarSuccess = true
           this.snackbarMessage = res.data.message  
           this.showQrImage = false
+          this.recoveryCode = res.data.recoveryCode
+          setTimeout(() => this.dialog = true, 1000)
           
         })
         .catch(err => {
@@ -483,16 +512,18 @@ export default {
 
     },
     disableTwoFa(){
-      if (this.password != ''){
+      if (this.tfapassword != ''){
           const data = {
           "password": this.tfapassword
         }
-        this.password = ''
+        this.tfapassword = ''
         ApiService.post('/two-factor/disable', data)
         .then(res => {
-          console.log('DEBUG:', res)
           if(res.data.error == false){
             // disabled and switch disable to enable button
+            TokenService.setTfaState(false)
+            this.tfa_state = false
+            this.twofaButtonSwitch = false
             this.snackbarSuccess = true
             this.snackbarMessage = res.data.message  
           }

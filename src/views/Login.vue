@@ -70,7 +70,7 @@
 
 <script>
 import { LOGIN } from '../store/modules/actions.type'
-
+import { TokenService } from '@/services/storage.service'
 export default {
   name: 'Login',
   data() {
@@ -91,6 +91,13 @@ export default {
         .dispatch(LOGIN, { username, password })
         .then(() => {
           this.btnLoading = false
+          if(this.$store.getters.getCurrentUser.twoFactorEnabled == true){
+            this.$router.push({ name: 'tfa'})
+            TokenService.setTfaState(this.$store.getters.getCurrentUser.twoFactorEnabled)
+          } else {
+            this.$router.push({ name: 'dashboard'})
+            TokenService.setTfaState(false)
+          }
         })
         .catch(err => {
           this.btnLoading = false
