@@ -38,6 +38,11 @@ const routes = [
     path: '/account/reset-password',
     name: 'reset-password',
     component: () => import('@/views/ResetPassword')
+  },
+  {
+    path: '/tfa',
+    name: 'tfa',
+    component: () => import('@/views/TwoFaVerification')
   }
 ]
 
