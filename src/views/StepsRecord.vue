@@ -11,7 +11,7 @@
     :headers="headers"
     :items="records"
     sort-by="calories"
-    class="elevation-1"
+    class="elevation-1 v-table"
   >
     <template v-slot:top>
       <v-toolbar flat color="white">
@@ -108,8 +108,8 @@ export default {
           align: 'left',
           value: 'dateRecorded',
         },
-        { text: 'Total Steps', value: 'totalSteps' },
-        { text: 'Actions', value: 'action', sortable: false },
+        { text: 'Total Steps', align: 'center', value: 'totalSteps' },
+        { text: 'Actions', align:'center', value: 'action', sortable: false },
       ],
       editedIndex: -1,
       editedItem: {
@@ -272,3 +272,14 @@ export default {
   }
 }
 </script>
+
+<style>
+
+th {
+  font-size: 30px !important;
+}
+
+td {
+  font-size: 20px !important;
+}
+</style>
