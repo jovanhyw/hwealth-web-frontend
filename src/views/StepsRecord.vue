@@ -9,22 +9,16 @@
 
     <v-data-table
     :headers="headers"
-    :items="desserts"
+    :items="records"
     sort-by="calories"
     class="elevation-1"
   >
     <template v-slot:top>
       <v-toolbar flat color="white">
-        <v-toolbar-title>My CRUD</v-toolbar-title>
-        <v-divider
-          class="mx-4"
-          inset
-          vertical
-        ></v-divider>
         <v-spacer></v-spacer>
         <v-dialog v-model="dialog" max-width="500px">
           <template v-slot:activator="{ on }">
-            <v-btn color="primary" dark class="mb-2" v-on="on">New Item</v-btn>
+            <v-btn color="primary" dark class="mb-2" v-on="on">New Record</v-btn>
           </template>
           <v-card>
             <v-card-title>
@@ -34,20 +28,8 @@
             <v-card-text>
               <v-container>
                 <v-row>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.name" label="Dessert name"></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.calories" label="Calories"></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.fat" label="Fat (g)"></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.carbs" label="Carbs (g)"></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field v-model="editedItem.protein" label="Protein (g)"></v-text-field>
+                  <v-col cols="8">
+                    <v-text-field v-model="editedItem.totalSteps" label="Total Steps"></v-text-field>
                   </v-col>
                 </v-row>
               </v-container>
@@ -68,63 +50,86 @@
         class="mr-2"
         @click="editItem(item)"
       >
-        edit
+        mdi-pencil
       </v-icon>
       <v-icon
         small
         @click="deleteItem(item)"
       >
-        delete
+        mdi-delete
       </v-icon>
     </template>
-    <template v-slot:no-data>
-      <v-btn color="primary" @click="initialize">Reset</v-btn>
-    </template>
+
   </v-data-table>
 
      </v-container>
+
+    <v-snackbar v-model="snackbarSuccess" :timeout="3000" bottom color="success">
+        <span>{{ snackbarMessage }}</span>
+        <v-btn
+          text
+          color="white"
+          @click="
+            {
+              snackbarSuccess = false
+              snackbarMessage = ''
+            }
+          "
+          >Close</v-btn
+        >
+      </v-snackbar>
+
+      <v-snackbar v-model="snackbarError" :timeout="3000" bottom color="error">
+        <span>{{ snackbarMessage }}</span>
+        <v-btn
+          text
+          color="white"
+          @click="
+            {
+              snackbarError = false
+              snackbarMessage = ''
+            }
+          "
+          >Close</v-btn
+        >
+      </v-snackbar>
+
    </div>
 </template>
 
 <script>
+import ApiService from '@/services/api.service'
 export default {
   data: () => ({
       dialog: false,
       headers: [
         {
-          text: 'Dessert (100g serving)',
+          text: 'Date',
           align: 'left',
-          sortable: false,
-          value: 'name',
+          value: 'dateRecorded',
         },
-        { text: 'Calories', value: 'calories' },
-        { text: 'Fat (g)', value: 'fat' },
-        { text: 'Carbs (g)', value: 'carbs' },
-        { text: 'Protein (g)', value: 'protein' },
+        { text: 'Total Steps', value: 'totalSteps' },
         { text: 'Actions', value: 'action', sortable: false },
       ],
-      desserts: [],
       editedIndex: -1,
       editedItem: {
-        name: '',
-        calories: 0,
-        fat: 0,
-        carbs: 0,
-        protein: 0,
+        totalSteps: '0'
       },
       defaultItem: {
-        name: '',
-        calories: 0,
-        fat: 0,
-        carbs: 0,
-        protein: 0,
+        totalSteps: '0'
       },
+      
+      records: [],
+      //my data
+      snackbarSuccess: false,
+      snackbarError: false,
+      snackbarMessage: '',
     }),
 
   computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
-      },
+        return this.editedIndex === -1 ? 'New Steps Record' : 'Edit Steps Record'
+      }
     },
   watch: {
     dialog (val) {
@@ -133,93 +138,113 @@ export default {
   },
 
   created () {
-    this.initialize()
+    this.getStepsRecord()
+
   },
   methods: {
-      initialize () {
-        this.desserts = [
-          {
-            name: 'Frozen Yogurt',
-            calories: 159,
-            fat: 6.0,
-            carbs: 24,
-            protein: 4.0,
-          },
-          {
-            name: 'Ice cream sandwich',
-            calories: 237,
-            fat: 9.0,
-            carbs: 37,
-            protein: 4.3,
-          },
-          {
-            name: 'Eclair',
-            calories: 262,
-            fat: 16.0,
-            carbs: 23,
-            protein: 6.0,
-          },
-          {
-            name: 'Cupcake',
-            calories: 305,
-            fat: 3.7,
-            carbs: 67,
-            protein: 4.3,
-          },
-          {
-            name: 'Gingerbread',
-            calories: 356,
-            fat: 16.0,
-            carbs: 49,
-            protein: 3.9,
-          },
-          {
-            name: 'Jelly bean',
-            calories: 375,
-            fat: 0.0,
-            carbs: 94,
-            protein: 0.0,
-          },
-          {
-            name: 'Lollipop',
-            calories: 392,
-            fat: 0.2,
-            carbs: 98,
-            protein: 0,
-          },
-          {
-            name: 'Honeycomb',
-            calories: 408,
-            fat: 3.2,
-            carbs: 87,
-            protein: 6.5,
-          },
-          {
-            name: 'Donut',
-            calories: 452,
-            fat: 25.0,
-            carbs: 51,
-            protein: 4.9,
-          },
-          {
-            name: 'KitKat',
-            calories: 518,
-            fat: 26.0,
-            carbs: 65,
-            protein: 7,
-          },
-        ]
+      // get steps record api
+      getStepsRecord(){
+        ApiService.get('/steps-record')
+        .then(res => {
+          this.records = res.data.records
+          this.records.forEach(record => {
+            record.dateRecorded = new Date(record.dateRecorded).getDate() + '-' + (new Date(record.dateRecorded).getMonth() + 1) + '-' + new Date(record.dateRecorded).getFullYear()
+          })
+          this.snackbarSuccess = true
+          this.snackbarMessage = res.data.message  
+        })
+        .catch(err => {
+          this.snackbarError = true
+          this.snackbarMessage = err.response.data.message
+        })
+      },
+
+      createStepsRecord(totalSteps){
+        const steps = totalSteps.trim()
+        if (steps == ''){
+          this.snackbarError = true
+          this.snackbarMessage = "Total steps must not be empty."
+          return
+        }
+        if (isNaN(steps)){
+          this.snackbarError = true
+          this.snackbarMessage = "Total steps must be a number."
+          return
+        }
+        // validation
+        const d = new Date()
+        const data = {
+          "dateRecorded": d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getUTCDate(),
+          "totalSteps": steps
+        }
+        ApiService.post('steps-record', data)
+        .then(res => {
+          this.getStepsRecord()
+          this.snackbarSuccess = true
+          this.snackbarMessage = res.data.message
+          
+        })
+        .catch(err => {
+          this.snackbarError = true
+          this.snackbarMessage = err.response.data.message
+        })
+      },
+
+      updateStepsRecord(id, totalSteps){
+        const steps = totalSteps.trim()
+        if (steps == ''){
+          this.snackbarError = true
+          this.snackbarMessage = "Total steps must not be empty."
+          return
+        }
+        if (isNaN(steps)){
+          this.snackbarError = true
+          this.snackbarMessage = "Total steps must be a number."
+          return
+        }
+        const d = new Date()
+        const url = 'steps-record/' + id
+        const data = {
+          "dateRecorded": d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getUTCDate(),
+          "totalSteps": steps
+        }
+        ApiService.put(url, data)
+        .then(res => {
+          this.getStepsRecord()
+          this.snackbarSuccess = true
+          this.snackbarMessage = res.data.message
+        })
+        .catch(err => {
+          this.snackbarError = true
+          this.snackbarMessage = err.response.data.message
+        })
+      },
+
+      deleteStepsRecord(id){
+        const url = 'steps-record/' + id 
+        ApiService.delete(url)
+        .then(res => {
+          this.getStepsRecord()
+          this.snackbarSuccess = true
+          this.snackbarMessage = res.data.message
+        })
+        .catch(err => {
+          this.snackbarError = true
+          this.snackbarMessage = err.response.data.message
+        })
       },
 
       editItem (item) {
-        this.editedIndex = this.desserts.indexOf(item)
+        this.editedIndex = this.records.indexOf(item)
         this.editedItem = Object.assign({}, item)
         this.dialog = true
       },
 
       deleteItem (item) {
-        const index = this.desserts.indexOf(item)
-        confirm('Are you sure you want to delete this item?') && this.desserts.splice(index, 1)
+        var c = confirm('Are you sure you want to delete this record?')
+        if(c == true){
+          this.deleteStepsRecord(item._id)
+        }
       },
 
       close () {
@@ -232,9 +257,15 @@ export default {
 
       save () {
         if (this.editedIndex > -1) {
-          Object.assign(this.desserts[this.editedIndex], this.editedItem)
+          // update
+          const id = this.records[this.editedIndex]._id
+          const stepsVal = this.editedItem.totalSteps
+          this.updateStepsRecord(id, stepsVal)
+          console.log(id)
+
         } else {
-          this.desserts.push(this.editedItem)
+          // create
+          this.createStepsRecord(this.editedItem.totalSteps)
         }
         this.close()
       },
