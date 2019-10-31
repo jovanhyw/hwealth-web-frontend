@@ -63,14 +63,27 @@ const ApiService = {
         if (error.response.status == 401) {
           // when 401 is received, clear localStorage
           if (
-            error.response.data.message === 'Two Factor Authentication is enabled but Two Factor Authentication has not passed.'
+            error.response.data.message ===
+            'Two Factor Authentication is enabled but Two Factor Authentication has not passed.'
           ) {
             TokenService.removeToken()
             store.dispatch(LOGOUT)
             router.push({ name: 'login' })
             throw error
-          } else {
-            console.log("Debug [different response msg]: ", error.response.data.message)
+          } else if (
+            error.response.data.message ===
+            'Invalid token.'
+          ) {
+            TokenService.removeToken()
+            store.dispatch(LOGOUT)
+            router.push({ name: 'login' })
+            throw error
+          }
+          else {
+            console.log(
+              'Debug [different response msg]: ',
+              error.response.data.message
+            )
           }
         }
         if (error.response.status == 403) {

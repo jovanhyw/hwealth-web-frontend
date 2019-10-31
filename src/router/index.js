@@ -43,6 +43,16 @@ const routes = [
     path: '/tfa',
     name: 'tfa',
     component: () => import('@/views/TwoFaVerification')
+  },
+  {
+    path: '/steps-record/',
+    name: 'steps-record',
+    component: () => import('@/views/StepsRecord')
+  },
+  {
+    path: '/calories-record/',
+    name: 'calories-record',
+    component: () => import('@/views/CaloriesRecord')
   }
 ]
 
