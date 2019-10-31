@@ -1,5 +1,6 @@
 <template>
   <div class="settings">
+    <v-container>
     <!-- <v-row align="center" justify="center">
 	  <v-img src="doctors.svg" max-width="800"></v-img>
     </v-row>-->
@@ -242,6 +243,7 @@
         </v-tab-item>
       </v-tabs>
     </v-card>
+    </v-container>
 
      <v-snackbar v-model="snackbarSuccess" :timeout="3000" bottom color="success">
       <span>{{ snackbarMessage }}</span>
@@ -368,7 +370,10 @@ export default {
     getProfile(){
         ApiService.get('/profile')
         .then(res => (this.fullname = res.data.profile.fullname))
-        .catch(err => console.log(err))
+        .catch(err => {
+          this.snackbarError = true
+          this.snackbarMessage = err.response.data.message
+          })
     },
     updateProfile(){
       const data = {

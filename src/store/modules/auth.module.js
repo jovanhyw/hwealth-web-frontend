@@ -1,7 +1,7 @@
 import ApiService from '@/services/api.service'
 import { TokenService } from '../../services/storage.service'
-import { SET_USER, REMOVE_USER} from './mutations.type'
-import { LOGIN, LOGOUT} from './actions.type'
+import { SET_USER, REMOVE_USER } from './mutations.type'
+import { LOGIN, LOGOUT } from './actions.type'
 
 const state = {
   user: null,
@@ -58,5 +58,3 @@ export default {
   getters,
   actions
 }
-
-

@@ -33,13 +33,13 @@ export const TokenService = {
     localStorage.removeItem(REFRESH_TOKEN_KEY)
   },
   // TFA_STATE
-  getTfaState(){
+  getTfaState() {
     return localStorage.getItem(TFA_STATE)
   },
-  setTfaState(state){
+  setTfaState(state) {
     localStorage.setItem(TFA_STATE, state)
   },
-  removeTfaState(){
+  removeTfaState() {
     localStorage.removeItem(TFA_STATE)
   }
 }
