@@ -53,6 +53,16 @@ const routes = [
     path: '/calories-record/',
     name: 'calories-record',
     component: () => import('@/views/CaloriesRecord')
+  },
+  {
+    path: '/chats/',
+    name: 'chats',
+    component: () => import('@/views/Chats')
+  },
+  {
+    path: '/testchats/',
+    name: 'testchats',
+    component: () => import('@/views/testChats')
   }
 ]
 

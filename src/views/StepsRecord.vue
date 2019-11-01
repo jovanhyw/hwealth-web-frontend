@@ -11,7 +11,7 @@
     :headers="headers"
     :items="records"
     sort-by="calories"
-    class="elevation-1 v-table"
+    class="elevation-1 v-table black--text"
   >
     <template v-slot:top>
       <v-toolbar flat color="white">
@@ -276,10 +276,10 @@ export default {
 <style>
 
 th {
-  font-size: 30px !important;
+  font-size: 25px !important;
 }
 
 td {
-  font-size: 20px !important;
+  font-size: 15px !important;
 }
 </style>
