@@ -1,15 +1,13 @@
 <template>
   <nav>
     <!-- Public Top Navbar -->
-    <v-app-bar color="deep-purple accent-4" dark app class="px-12">
+    <v-app-bar color="deep-purple accent-4" dark app class="px-2">
       <v-btn icon @click.stop="mini = !mini">
         <v-icon>mdi-chevron-left</v-icon>
       </v-btn>
-      <!-- Hamburger -->
-      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
       <!-- Brand Logo -->
-      <v-app-bar-nav-icon>
+      <v-app-bar-nav-icon class="mr-4 ml-1">
         <v-avatar>
           <v-img src="/favicon-32x32.png"></v-img>
         </v-avatar>
@@ -28,18 +26,26 @@
         :key="tab.text"
         router
         :to="tab.route"
-        class="ma-1"
+        class="ma-1 hidden-xs-only"
         >{{ tab.text }}</v-btn
       >
-      <v-btn text rounded class="ma-1" @click="logout">Logout</v-btn>
+      <v-btn text rounded class="ma-1 hidden-xs-only" @click="logout"
+        >Logout</v-btn
+      >
+
+      <!-- todo: show the drawer on xs screen -->
+      <v-app-bar-nav-icon
+        class="hidden-sm-and-up"
+        @click="drawer = !drawer"
+      ></v-app-bar-nav-icon>
     </v-app-bar>
 
     <!-- Side Navbar -->
     <v-navigation-drawer
-      v-model="drawer"
       color="deep-purple accent-4"
       dark
       app
+      permanent
       :mini-variant.sync="mini"
     >
       <v-list>
@@ -73,7 +79,7 @@ export default {
         { text: 'About', route: '/about' },
         { text: 'Settings', route: '/settings' }
       ],
-      drawer: true,
+      drawer: false,
       sideNavLinks: [
         {
           icon: 'mdi-view-dashboard',

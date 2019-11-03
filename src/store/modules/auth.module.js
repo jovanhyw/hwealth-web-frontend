@@ -14,6 +14,7 @@ const mutations = {
     state.isAuthenticated = true
 
     TokenService.saveToken(user.token)
+    TokenService.saveTfaState(user.twoFactorEnabled)
     ApiService.setHeader()
   },
   [REMOVE_USER](state) {
@@ -22,6 +23,7 @@ const mutations = {
 
     TokenService.removeToken()
     TokenService.removeTfaState()
+    TokenService.removeTfaAuth()
     ApiService.removeHeader()
   }
 }

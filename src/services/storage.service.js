@@ -38,7 +38,7 @@ export const TokenService = {
   getTfaState() {
     return localStorage.getItem(TFA_STATE)
   },
-  setTfaState(state) {
+  saveTfaState(state) {
     localStorage.setItem(TFA_STATE, state)
   },
   removeTfaState() {

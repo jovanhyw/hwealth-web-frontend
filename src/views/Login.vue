@@ -75,6 +75,7 @@
 <script>
 import { LOGIN } from '../store/modules/actions.type'
 import { TokenService } from '@/services/storage.service'
+
 export default {
   name: 'Login',
   data() {
@@ -93,19 +94,21 @@ export default {
       this.btnLoading = true
       this.$store
         .dispatch(LOGIN, { username, password })
-        .then(() => {
+        .then(res => {
           this.btnLoading = false
-          if (this.$store.getters.getCurrentUser.twoFactorEnabled == true) {
-            this.$router.push({ name: 'tfa' })
-            TokenService.setTfaState(
-              this.$store.getters.getCurrentUser.twoFactorEnabled
-            )
-          } else {
-            this.$router.push({ name: 'dashboard' })
-            TokenService.setTfaState(false)
+
+          /**
+           * If account has 2FA enabled, direct to 2FA page
+           */
+          if (res.twoFactorEnabled) {
+            TokenService.saveTfaAuth(false)
+            return this.$router.push({ name: 'tfa' })
           }
+
+          this.$router.push({ name: 'dashboard' })
         })
         .catch(err => {
+          console.log(err)
           this.btnLoading = false
           this.snackbarError = true
           this.snackbarMessage = err.response.data.message
