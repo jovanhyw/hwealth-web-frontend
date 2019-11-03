@@ -7,6 +7,9 @@ import ApiService from './services/api.service'
 import { TokenService } from './services/storage.service'
 import { ValidationProvider, extend } from 'vee-validate'
 import { required } from 'vee-validate/dist/rules'
+import Chat from 'vue-beautiful-chat'
+
+Vue.use(Chat)
 
 Vue.config.productionTip = false
 

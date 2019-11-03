@@ -70,16 +70,12 @@ const ApiService = {
             store.dispatch(LOGOUT)
             router.push({ name: 'login' })
             throw error
-          } else if (
-            error.response.data.message ===
-            'Invalid token.'
-          ) {
+          } else if (error.response.data.message === 'Invalid token.') {
             TokenService.removeToken()
             store.dispatch(LOGOUT)
             router.push({ name: 'login' })
             throw error
-          }
-          else {
+          } else {
             console.log(
               'Debug [different response msg]: ',
               error.response.data.message
