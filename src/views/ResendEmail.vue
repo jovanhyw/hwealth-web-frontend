@@ -4,18 +4,17 @@
       <v-col cols="6" md="5" lg="4">
         <v-card class="elevation-4">
           <v-toolbar color="deep-purple accent-4" dark flat>
-            <v-toolbar-title>Reset Password</v-toolbar-title>
+            <v-toolbar-title>Resend Verification Email</v-toolbar-title>
           </v-toolbar>
-          <v-form @submit.prevent="resetPass" v-model="validForm">
+          <v-form @submit.prevent="resendEmail" v-model="validForm">
             <v-card-text>
               <v-text-field
-                label="New Password"
-                prepend-icon="mdi-lock"
-                type="password"
-                autocomplete="off"
-                v-model="newPassword"
-                :rules="[notEmptyRule('New password')]"
-              ></v-text-field>
+                label="Email"
+                prepend-icon="mdi-email"
+                type="text"
+                v-model="email"
+                :rules="[notEmptyRule('Email'), emailRule()]"
+              />
             </v-card-text>
             <v-card-actions class="justify-center">
               <v-btn
@@ -24,7 +23,7 @@
                 class="mb-2"
                 :loading="btnLoading"
                 :disabled="!validForm"
-                >Reset Password</v-btn
+                >Resend Email</v-btn
               >
             </v-card-actions>
           </v-form>
@@ -68,10 +67,10 @@
 import ApiService from '@/services/api.service'
 
 export default {
-  name: 'ResetPassword',
+  name: 'ResendEmail',
   data() {
     return {
-      newPassword: '',
+      email: '',
       snackbarSuccess: false,
       snackbarError: false,
       snackbarMessage: '',
@@ -79,18 +78,18 @@ export default {
       notEmptyRule(property) {
         return v => (v && v.length > 0) || `${property} cannot be empty.`
       },
+      emailRule() {
+        return v => /.+@.+\..+/.test(v) || 'E-mail must be valid.'
+      },
       validForm: false
     }
   },
   methods: {
-    resetPass() {
+    resendEmail() {
       this.btnLoading = true
-      ApiService.post(
-        '/account/reset-password?token=' + this.$route.query.token,
-        {
-          newPassword: this.newPassword
-        }
-      )
+      ApiService.post('/account/resend-email-token', {
+        email: this.email
+      })
         .then(res => {
           this.btnLoading = false
           this.snackbarSuccess = true

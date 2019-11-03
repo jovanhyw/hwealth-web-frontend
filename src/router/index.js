@@ -40,6 +40,33 @@ const routes = [
     }
   },
   {
+    path: '/account/reset-password',
+    name: 'reset-password',
+    component: () => import('@/views/ResetPassword'),
+    meta: {
+      public: true,
+      onlyWhenLoggedOut: true
+    }
+  },
+  {
+    path: '/forgot-password',
+    name: 'forgot-password',
+    component: () => import('@/views/ForgotPassword'),
+    meta: {
+      public: true,
+      onlyWhenLoggedOut: true
+    }
+  },
+  {
+    path: '/resend-email-token',
+    name: 'resend-email-token',
+    component: () => import('@/views/ResendEmail'),
+    meta: {
+      public: true,
+      onlyWhenLoggedOut: true
+    }
+  },
+  {
     path: '/dashboard',
     name: 'dashboard',
     component: () => import('@/views/Dashboard')
@@ -49,11 +76,7 @@ const routes = [
     name: 'settings',
     component: () => import('@/views/Settings')
   },
-  {
-    path: '/account/reset-password',
-    name: 'reset-password',
-    component: () => import('@/views/ResetPassword')
-  },
+
   {
     path: '/tfa',
     name: 'tfa',

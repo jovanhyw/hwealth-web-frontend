@@ -47,6 +47,18 @@
                       >Login</v-btn
                     >
                   </v-form>
+
+                  <div class="ma-2 subtitle-2">
+                    <a href="/forgot-password">
+                      <i>Forgotten Password</i>
+                    </a>
+                  </div>
+
+                  <div class="ma-2 subtitle-2">
+                    <a href="/resend-email-token">
+                      <i>Did not receive email verification</i>
+                    </a>
+                  </div>
                 </v-card-text>
               </v-card>
             </v-col>
