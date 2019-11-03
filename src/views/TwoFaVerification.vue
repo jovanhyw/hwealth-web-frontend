@@ -1,57 +1,57 @@
 <template>
-  <div class="twofaverifcation">
-    <v-container class="fill-height" fluid>
-      <v-row align="center" justify="center">
-        <v-col cols="12" sm="8" md="4">
-          <v-card class="elevation-5">
-            <v-toolbar color="primary" dark flat>
-              <v-spacer></v-spacer>
-              <v-toolbar-title><h2>2FA Authentication</h2></v-toolbar-title>
-              <v-spacer></v-spacer>
-            </v-toolbar>
-            <v-card-text>
-              <div class="title text--primary font-weight-light">
-                Enter the 6 digit verification code from your authenticator app.
-              </div>
-              <v-text-field
-                v-model="securityCode"
-                label="Security Code"
-                outlined
-                :maxlength="6"
-                class="mt-10"
-              ></v-text-field>
-              <div class="">
-                <a href="@"><i>I lost access to my Authenticator device</i></a>
-              </div>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="primary" class="mr-2" @click="goBack">
-                <v-icon>mdi-keyboard-backspace</v-icon>
-              </v-btn>
-              <v-btn color="success" @click="proceed" :loading="proceedLoading">
-                <v-icon>mdi-check</v-icon>
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
+  <v-container fluid>
+    <v-row align="start" justify="center" class="px-12">
+      <v-col cols="12" sm="8" md="4">
+        <v-card class="elevation-5">
+          <v-toolbar color="primary" dark flat>
+            <v-toolbar-title>2FA Authentication</v-toolbar-title>
+          </v-toolbar>
 
-    <v-snackbar v-model="snackbarSuccess" :timeout="0" bottom color="success">
-      <span>{{ snackbarMessage }}</span>
-      <v-btn
-        text
-        color="white"
-        @click="
-          {
-            snackbarSuccess = false
-            snackbarMessage = ''
-          }
-        "
-        >Close</v-btn
-      >
-    </v-snackbar>
+          <v-card-text>
+            <div class="subtitle-1" align="center" justify="center">
+              <span>
+                Enter the 6 digit verification code from your authenticator app.
+              </span>
+
+              <v-form @submit.prevent="validate2fa">
+                <v-row class="mb-n6" align="center" justify="center">
+                  <v-col cols="12" sm="6" lg="10">
+                    <v-text-field
+                      v-model="securityCode"
+                      label="Security Code"
+                      outlined
+                      :maxlength="6"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+
+                <v-row class="mt-n10" align="center" justify="center">
+                  <v-col cols="12" sm="6">
+                    <v-btn
+                      color="success"
+                      :loading="verifyBtnLoading"
+                      @click="validate2fa"
+                    >
+                      <v-icon left>mdi-check</v-icon>
+                      <span>Verify</span>
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-form>
+            </div>
+          </v-card-text>
+
+          <v-card-actions>
+            <div class="ma-2 subtitle-2">
+              <a href="@">
+                <i>I lost access to my Authenticator device</i>
+              </a>
+            </div>
+          </v-card-actions>
+        </v-card>
+      </v-col>
+    </v-row>
+
     <v-snackbar v-model="snackbarError" :timeout="0" bottom color="error">
       <span>{{ snackbarMessage }}</span>
       <v-btn
@@ -66,55 +66,58 @@
         >Close</v-btn
       >
     </v-snackbar>
-  </div>
+  </v-container>
 </template>
 
 <script>
 import ApiService from '@/services/api.service'
 import { TokenService } from '@/services/storage.service'
+
 export default {
-  name: 'TwoFaVerifcation',
+  name: 'TwoFaVerification',
   data() {
     return {
-      snackbarSuccess: false,
       snackbarError: false,
       snackbarMessage: '',
-      securityCode: '',
-      proceedLoading: false
+      securityCode: null,
+      verifyBtnLoading: false
     }
   },
   methods: {
-    goBack() {
-      this.$router.push({ name: 'login' })
-    },
-    proceed() {
-      if (this.securityCode != '') {
-        const data = {
-          token: this.securityCode
-        }
-        this.securityCode = ''
-        this.proceedLoading = true
-        ApiService.post('two-factor/authenticate', data).then(res => {
-          const token = res.data.token
-          TokenService.removeToken()
-          ApiService.removeHeader()
-          TokenService.saveToken(token)
-          ApiService.setHeader()
-
-          this.snackbarSuccess = true
-          this.snackbarMessage = res.data.message
-
-          setTimeout(() => this.$router.push({ name: '/dashboard' }), 2000)
-        })
-      } else {
+    validate2fa() {
+      if (this.securityCode === null || this.securityCode === '') {
+        this.verifyTfaBtn = false
         this.snackbarError = true
-        this.snackbarMessage = 'Security Code field is empty. Please try again.'
+        this.snackbarMessage = 'Security code is required.'
+        return
       }
 
-      //this.$router.push({ name: "dashboard"})
+      this.verifyBtnLoading = true
+      ApiService.post('/two-factor/authenticate', { token: this.securityCode })
+        .then(res => {
+          this.verifyBtnLoading = false
+
+          // on success, clear the variable
+          this.securityCode = null
+
+          // clear the current jwt, save the new jwt
+          TokenService.removeToken()
+          ApiService.removeHeader()
+          TokenService.saveToken(res.data.token)
+          ApiService.setHeader()
+
+          // direct to search
+          TokenService.saveTfaAuth(true)
+          this.$router.push({ name: 'dashboard' })
+        })
+        .catch(err => {
+          this.verifyBtnLoading = false
+          this.snackbarError = true
+          this.snackbarMessage = err.response.data.message
+        })
     }
   }
 }
 </script>
 
-<style lang="sass" scoped></style>
+<style></style>

@@ -1,588 +1,710 @@
 <template>
-  <div class="settings">
-    <v-container>
-      <!-- <v-row align="center" justify="center">
-	  <v-img src="doctors.svg" max-width="800"></v-img>
-      </v-row>-->
-      <h1>Settings</h1>
-      <v-divider></v-divider>
-      <br />
-      <v-card>
-        <v-toolbar flat color="primary" dark>
-          <v-toolbar-title>General Account Settings</v-toolbar-title>
-        </v-toolbar>
-        <v-tabs vertical center-active>
-          <v-tab> <v-icon left>mdi-account</v-icon>User Profile </v-tab>
-          <v-tab> <v-icon left>mdi-lock</v-icon>Security </v-tab>
+  <v-container fluid class="pa-12" style="max-width: 1344px;">
+    <v-row align="start" justify="center" class="px-12">
+      <v-col cols="12">
+        <v-card class="elevation-5">
+          <v-toolbar color="primary" dark>
+            <v-toolbar-title>General Account Settings</v-toolbar-title>
+          </v-toolbar>
 
-          <v-tab-item>
-            <v-card flat>
-              <v-form>
-                <v-container>
-                  <h1>Profile</h1>
+          <v-tabs vertical>
+            <v-tab>
+              <v-icon left>mdi-account</v-icon>
+              <span>Account</span>
+            </v-tab>
+            <v-tab>
+              <v-icon left>mdi-account-badge-horizontal</v-icon>
+              <span>Profile</span>
+            </v-tab>
+            <v-tab>
+              <v-icon left>mdi-lock</v-icon>
+              <span>Security</span>
+            </v-tab>
 
-                  <v-row>
-                    <v-col cols="12" sm="6">
-                      <v-text-field
-                        v-model="username"
-                        label="Username"
-                        outlined
-                        disabled
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                  <v-row class="mt-n6">
-                    <v-col cols="12" sm="6">
-                      <v-text-field
-                        v-model="email"
-                        label="Email"
-                        outlined
-                        disabled
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                  <v-row class="mt-n6">
-                    <v-col cols="12" sm="6">
-                      <v-text-field
-                        v-model="fullname"
-                        label="Full Name"
-                        outlined
-                        :disabled="disableField1"
-                        :maxlength="50"
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                  <v-row class="mt-n6">
-                    <v-col cols="12" sm="6">
-                      <v-menu
-                        v-model="menu2"
-                        :close-on-content-click="false"
-                        :nudge-right="40"
-                        transition="scale-transition"
-                        offset-y
-                        min-width="290px"
-                      >
-                        <template v-slot:activator="{ on }">
+            <!-- For Account Tab -->
+            <v-tab-item>
+              <v-card flat>
+                <v-container fluid class="ma-2">
+                  <v-form
+                    @submit.prevent="updateEmail"
+                    v-model="validAccountForm"
+                  >
+                    <div class="title">Account</div>
+
+                    <v-row>
+                      <v-col cols="12" sm="6">
+                        <v-text-field
+                          v-model="username"
+                          label="Username"
+                          outlined
+                          disabled
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+
+                    <v-row class="mt-n6">
+                      <v-col cols="12" sm="6">
+                        <v-text-field
+                          v-model="email"
+                          label="Email"
+                          outlined
+                          :disabled="editAccountBtn"
+                          :rules="[notEmptyRule('Email'), emailRule()]"
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+
+                    <v-row class="mt-n6" v-if="editAccountBtn == true">
+                      <v-col cols="12" sm="6">
+                        <v-btn
+                          color="primary"
+                          class="ma-1"
+                          @click="editAccountBtn = !editAccountBtn"
+                        >
+                          <v-icon left>mdi-pencil</v-icon>
+                          <span>Edit</span>
+                        </v-btn>
+                      </v-col>
+                    </v-row>
+
+                    <v-row class="mt-n6" v-else>
+                      <v-col cols="12" sm="6">
+                        <v-btn
+                          color="error"
+                          class="ma-1"
+                          @click="editAccountBtn = !editAccountBtn"
+                        >
+                          <v-icon left>mdi-cancel</v-icon>
+                          <span>Cancel</span>
+                        </v-btn>
+                        <v-btn
+                          color="success"
+                          class="ma-1"
+                          type="submit"
+                          :disabled="!validAccountForm"
+                          :loading="updateAccountBtn"
+                          @click="updateEmail"
+                        >
+                          <v-icon left>mdi-check</v-icon>
+                          <span>Update</span>
+                        </v-btn>
+                      </v-col>
+                    </v-row>
+                  </v-form>
+                </v-container>
+              </v-card>
+            </v-tab-item>
+
+            <!-- For Profile Tab -->
+            <v-tab-item>
+              <v-card flat>
+                <v-container fluid class="ma-2">
+                  <div class="title">Profile</div>
+                  <v-form
+                    @submit.prevent="updateProfile"
+                    v-model="validProfileForm"
+                  >
+                    <v-row>
+                      <v-col cols="12" sm="6">
+                        <v-text-field
+                          v-model="profile.fullname"
+                          label="Full Name"
+                          outlined
+                          :disabled="editProfileBtn"
+                          :rules="[notEmptyRule('Full Name')]"
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+
+                    <!-- Disable DOB for admin -->
+                    <!-- <v-row class="mt-n6">
+                        <v-col cols="12" sm="6">
                           <v-text-field
-                            v-model="dateOfBirth"
-                            label="Date of Birth"
-                            readonly
-                            v-on="on"
+                            v-model="profile.dateOfBirth"
+                            label="Date Of Birth"
                             outlined
-                            :disabled="disableField1"
+                            :disabled="editProfileBtn"
                           ></v-text-field>
-                        </template>
-                        <v-date-picker
-                          v-model="dateOfBirth"
-                          @input="menu2 = false"
-                        ></v-date-picker>
-                      </v-menu>
-                    </v-col>
-                  </v-row>
+                        </v-col>
+                    </v-row>-->
 
-                  <v-row class="mt-n6">
-                    <v-col cols="12" sm="6">
-                      <v-btn
-                        color="primary"
-                        class="mr-2"
-                        @click="
-                          ;(disableField1 = !disableField1) &
-                            (disableButton1 = !disableButton1)
-                        "
-                        :disabled="disableButton1"
-                      >
-                        <v-icon>mdi-pencil</v-icon>
-                      </v-btn>
-                      <v-btn
-                        color="success"
-                        @click="updateProfile"
-                        :loading="profileLoading"
-                        :disabled="disableField1"
-                      >
-                        <v-icon>mdi-check</v-icon>
-                      </v-btn>
-                    </v-col>
-                  </v-row>
+                    <v-row class="mt-n6" v-if="editProfileBtn == true">
+                      <v-col cols="12" sm="6">
+                        <v-btn
+                          color="primary"
+                          class="ma-1"
+                          @click="editProfileBtn = !editProfileBtn"
+                        >
+                          <v-icon left>mdi-pencil</v-icon>
+                          <span>Edit</span>
+                        </v-btn>
+                      </v-col>
+                    </v-row>
+
+                    <v-row class="mt-n6" v-else>
+                      <v-col cols="12" sm="6">
+                        <v-btn
+                          color="error"
+                          class="ma-1"
+                          @click="editProfileBtn = !editProfileBtn"
+                        >
+                          <v-icon left>mdi-cancel</v-icon>
+                          <span>Cancel</span>
+                        </v-btn>
+                        <v-btn
+                          color="success"
+                          class="ma-1"
+                          type="submit"
+                          :disabled="!validProfileForm"
+                          :loading="updateProfileBtn"
+                        >
+                          <v-icon left>mdi-check</v-icon>
+                          <span>Update</span>
+                        </v-btn>
+                      </v-col>
+                    </v-row>
+                  </v-form>
                 </v-container>
-              </v-form>
-            </v-card>
-          </v-tab-item>
-          <v-tab-item>
-            <v-card flat>
-              <v-form>
-                <v-container>
-                  <h1>Change Password</h1>
-                  <v-row>
-                    <v-col cols="12" sm="6">
-                      <v-text-field
-                        v-model="currentPwd"
-                        label="Current Password"
-                        outlined
-                        :disabled="disableField2"
-                        :type="'password'"
-                        :maxlength="25"
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                  <v-row class="mt-n6">
-                    <v-col cols="12" sm="6">
-                      <v-text-field
-                        v-model="newPwd"
-                        label="New Password"
-                        outlined
-                        :disabled="disableField2"
-                        :type="'password'"
-                        :maxlength="25"
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                  <v-row class="mt-n6">
-                    <v-col cols="12" sm="6">
-                      <v-text-field
-                        v-model="confirmPwd"
-                        label="Confirm Password"
-                        outlined
-                        :disabled="disableField2"
-                        :type="'password'"
-                        :maxlength="25"
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                  <v-row class="mt-n6">
-                    <v-col cols="12" sm="6">
-                      <v-btn
-                        color="primary"
-                        class="mr-2"
-                        @click="
-                          ;(disableField2 = !disableField2) &
-                            (disableButton2 = !disableButton2)
-                        "
-                        :disabled="disableButton2"
-                      >
-                        <v-icon>mdi-pencil</v-icon>
-                      </v-btn>
-                      <v-btn
-                        color="success"
-                        @click="updatePassword"
-                        :loading="changePwdLoading"
-                        :disabled="disableField2"
-                      >
-                        <v-icon>mdi-check</v-icon>
-                      </v-btn>
-                    </v-col>
-                  </v-row>
+              </v-card>
+            </v-tab-item>
+
+            <!-- For Security Tab -->
+            <v-tab-item>
+              <v-card flat>
+                <v-container fluid class="ma-2">
+                  <!-- Change Password -->
+                  <v-form @submit.prevent="updatePassword">
+                    <div class="title">Change Password</div>
+
+                    <v-row>
+                      <v-col cols="12" sm="6">
+                        <v-text-field
+                          v-model="currentPassword"
+                          label="Current Password"
+                          type="password"
+                          autocomplete="off"
+                          outlined
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+
+                    <v-row class="mt-n10">
+                      <v-col cols="12" sm="6">
+                        <v-text-field
+                          v-model="newPassword"
+                          label="New Password"
+                          type="password"
+                          autocomplete="off"
+                          outlined
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+
+                    <v-row class="mt-n10">
+                      <v-col cols="12" sm="6">
+                        <v-text-field
+                          v-model="confirmPassword"
+                          label="Confirm Password"
+                          type="password"
+                          autocomplete="off"
+                          outlined
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+
+                    <v-row class="mt-n10">
+                      <v-col cols="12" sm="6">
+                        <v-btn
+                          color="primary"
+                          type="submit"
+                          :loading="updatePasswordBtn"
+                        >
+                          <span>Update Password</span>
+                        </v-btn>
+                      </v-col>
+                    </v-row>
+                  </v-form>
+
+                  <!-- 2FA -->
+                  <div class="title mt-4">Two Factor Authentication</div>
+                  <span class="caption grey--text">
+                    You may need to download and install an Authenticator App
+                    before enabling two factor authentication. Examples of such
+                    Authenticator App that we recommend, while not limited to,
+                    includes; Tofu (iOS), Authenticator (iOS), Aegis
+                    Authenticator (Android), Google Authenticator, Authy.
+                  </span>
+
+                  <v-divider class="my-4"></v-divider>
+
+                  <!-- Render Enable Button -->
+                  <!-- To Generate the secret -->
+                  <div v-if="tfaEnabled === false && tfaSecret === null">
+                    <v-form @submit.prevent="generateTfaSecret">
+                      <v-row>
+                        <v-col cols="12" sm="6">
+                          <v-text-field
+                            v-model="tfaPassword"
+                            label="Password"
+                            type="password"
+                            autocomplete="off"
+                            outlined
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+
+                      <v-row class="mt-n10">
+                        <v-col cols="12" sm="6">
+                          <v-btn
+                            color="success"
+                            :loading="generateSecretBtn"
+                            @click="generateTfaSecret"
+                          >
+                            <span>Enable</span>
+                          </v-btn>
+                        </v-col>
+                      </v-row>
+                    </v-form>
+                  </div>
+
+                  <!-- Render the QRCode and secret -->
+                  <!-- To send to server secret and token -->
+                  <div v-if="qrImage !== null">
+                    <div class="font-weight-bold">
+                      Step 1: Scan the following QRCode on your Authenticator
+                      App.
+                    </div>
+                    <img :src="qrImage" />
+                    <div class="font-weight-bold">
+                      Alternatively, enter the following secret manually:
+                    </div>
+                    <div>{{ base32secret }}</div>
+
+                    <v-divider class="my-4"></v-divider>
+
+                    <div class="font-weight-bold">
+                      Step 2: To confirm the authenticator app is set up
+                      correctly, enter the security code that appears on the
+                      authenticator app.
+                    </div>
+                    <v-form @submit.prevent="enableTfa">
+                      <v-row class="mb-n6">
+                        <v-col cols="12" sm="6">
+                          <v-text-field
+                            v-model="securityCode"
+                            label="Security Code"
+                            outlined
+                            :maxlength="6"
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+
+                      <v-row class="mt-n10">
+                        <v-col cols="12" sm="6">
+                          <v-btn
+                            color="success"
+                            :loading="verifyTfaBtn"
+                            @click="enableTfa"
+                          >
+                            <span>Verify</span>
+                          </v-btn>
+                        </v-col>
+                      </v-row>
+                    </v-form>
+                  </div>
+
+                  <!-- Render Disable Button -->
+                  <!-- To disable 2FA -->
+                  <div v-if="tfaEnabled === true">
+                    <v-form @submit.prevent="disableTfa">
+                      <v-row>
+                        <v-col cols="12" sm="6">
+                          <v-text-field
+                            v-model="tfaPassword"
+                            label="Password"
+                            type="password"
+                            autocomplete="off"
+                            outlined
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+
+                      <v-row class="mt-n10">
+                        <v-col cols="12" sm="6">
+                          <v-btn
+                            color="error"
+                            :loading="disableBtnLoading"
+                            @click="disableTfa"
+                          >
+                            <span>Disable</span>
+                          </v-btn>
+                        </v-col>
+                      </v-row>
+                    </v-form>
+
+                    <v-row>
+                      <v-col cols="12" sm="6">
+                        <div class="title">View Recovery Code</div>
+                      </v-col>
+                    </v-row>
+
+                    <v-row class="mt-n4">
+                      <v-col cols="12" sm="6">
+                        <v-btn
+                          color="primary"
+                          :loading="viewBtnLoading"
+                          @click="getRecoveryCode"
+                        >
+                          <span>View</span>
+                        </v-btn>
+                      </v-col>
+                    </v-row>
+                  </div>
+
+                  <!-- END OF SECURITY TAB -->
                 </v-container>
-              </v-form>
-              <v-divider></v-divider>
-              <br />
-              <v-container>
-                <h1>Enable 2FA</h1>
-                <p class="body-2 font-weight-light">
-                  You may need to download and install the Google Authenticator
-                  App first before you can use this functionality.
-                </p>
-                <div v-if="showQrImage">
-                  <p><b>Step 1:</b> Scan this QR code with your mobile app:</p>
-                  <img :src="qrImage" />
-                  <p>
-                    <b>Step 2:</b>To confirm the third party app is set up
-                    correctly, enter the security code that appears on your
-                    phone.
-                  </p>
-                  <v-row class="mb-n6">
-                    <v-col cols="12" sm="6">
-                      <v-text-field
-                        v-model="securityCode"
-                        label="Security Code"
-                        outlined
-                        :maxlength="6"
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                </div>
-
-                <v-row class="mb-n6" v-if="!showQrImage">
-                  <v-col cols="12" sm="6">
-                    <v-text-field
-                      v-model="tfapassword"
-                      label="Password"
-                      outlined
-                      :type="'password'"
-                      :maxlength="25"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-
-                <v-row>
-                  <v-col cols="12" sm="6">
-                    <v-btn
-                      v-show="!tfa_state"
-                      :disabled="twofaButtonSwitch"
-                      :loading="twofaButtonLoading"
-                      class="mr-2"
-                      color="success"
-                      @click="enableTwoFa"
-                      >enable</v-btn
-                    >
-
-                    <v-btn
-                      v-show="confirmButtonShow"
-                      class="mr-2"
-                      color="warning"
-                      :loading="confirmLoading"
-                      @click="confirmSecurityCode"
-                      >confirm</v-btn
-                    >
-
-                    <v-btn
-                      v-show="tfa_state"
-                      class="mr-2"
-                      color="error"
-                      @click="disableTwoFa"
-                      >disable</v-btn
-                    >
-                  </v-col>
-                </v-row>
-              </v-container>
-            </v-card>
-          </v-tab-item>
-        </v-tabs>
-      </v-card>
-    </v-container>
-
-    <v-snackbar
-      v-model="snackbarSuccess"
-      :timeout="3000"
-      bottom
-      color="success"
-    >
-      <span>{{ snackbarMessage }}</span>
-      <v-btn
-        text
-        color="white"
-        @click="
-          {
-            snackbarSuccess = false
-            snackbarMessage = ''
-          }
-        "
-        >Close</v-btn
-      >
-    </v-snackbar>
-
-    <v-snackbar v-model="snackbarError" :timeout="3000" bottom color="error">
-      <span>{{ snackbarMessage }}</span>
-      <v-btn
-        text
-        color="white"
-        @click="
-          {
-            snackbarError = false
-            snackbarMessage = ''
-          }
-        "
-        >Close</v-btn
-      >
-    </v-snackbar>
-
-    <!-- modal -->
-    <v-row justify="center">
-      <v-dialog v-model="dialog" max-width="350">
-        <v-card>
-          <v-card-title class="headline">Recovery Code</v-card-title>
-
-          <v-card-text>
-            Please write down or memorise the recovery code. This code will
-            allow you to recover your account in case of you lost access to the
-            authenticator app.
-            <br />
-            <br />
-            <b>{{ this.recoveryCode }}</b>
-          </v-card-text>
-
-          <v-card-actions>
-            <v-spacer></v-spacer>
-
-            <v-btn color="green darken-1" text @click="dialog = false"
-              >OK</v-btn
-            >
-          </v-card-actions>
+              </v-card>
+            </v-tab-item>
+          </v-tabs>
         </v-card>
-      </v-dialog>
+
+        <v-snackbar
+          v-model="snackbarSuccess"
+          :timeout="0"
+          bottom
+          color="success"
+        >
+          <span>{{ snackbarMessage }}</span>
+          <v-btn
+            text
+            color="white"
+            @click="
+              {
+                snackbarSuccess = false
+                snackbarMessage = ''
+              }
+            "
+            >Close</v-btn
+          >
+        </v-snackbar>
+
+        <v-snackbar v-model="snackbarError" :timeout="0" bottom color="error">
+          <span>{{ snackbarMessage }}</span>
+          <v-btn
+            text
+            color="white"
+            @click="
+              {
+                snackbarError = false
+                snackbarMessage = ''
+              }
+            "
+            >Close</v-btn
+          >
+        </v-snackbar>
+
+        <v-dialog v-model="recoverCodeDialog" persistent max-width="500">
+          <v-card class="elevation-5">
+            <v-toolbar color="primary" dark flat>
+              <v-toolbar-title>Recovery Code</v-toolbar-title>
+            </v-toolbar>
+            <v-card-text>
+              <div class="font-weight-bold mx-2 my-4 black--text">
+                Please write down or save this recovery code. This code will
+                allow you to recover your account in case you lose access your
+                authenticator app.
+              </div>
+
+              <div align="center" justify="center">
+                <span class="font-weight-bold mb-4 black--text"
+                  >Recovery Code:</span
+                >
+                <div>{{ recoveryCode }}</div>
+              </div>
+
+              <v-row align="center" justify="center">
+                <v-btn
+                  color="primary"
+                  class="ma-1 mt-3"
+                  @click="recoverCodeDialog = false"
+                  >Ok</v-btn
+                >
+              </v-row>
+            </v-card-text>
+          </v-card>
+        </v-dialog>
+      </v-col>
     </v-row>
-  </div>
+  </v-container>
 </template>
 
 <script>
 import ApiService from '@/services/api.service'
 import { TokenService } from '@/services/storage.service'
-const QRCode = require('qrcode')
+import QRCode from 'qrcode'
 
 export default {
-  name: 'settings',
-  components: {},
-  data: () => ({
-    //date: new Date().toISOString().substr(0, 10),
-    dateOfBirth: '',
-    menu2: false,
-    username: '',
-    fullname: '',
-    email: '',
-    currentPwd: '',
-    newPwd: '',
-    confirmPwd: '',
-    dateMenu: false,
-    disableField1: true,
-    disableButton1: false,
-    disableField2: true,
-    disableButton2: false,
-    enableButton: true,
-    profileLoading: false,
-    changePwdLoading: false,
-    snackbarSuccess: false,
-    snackbarError: false,
-    snackbarMessage: '',
-    tfapassword: '',
-    qrImage: '',
-    tempSecret: '',
-    showQrImage: false,
-    twofaButtonSwitch: false,
-    twofaButtonLoading: false,
-    securityCode: '',
-    confirmLoading: false,
-    confirmButtonShow: false,
-    tfa_state: TokenService.getTfaState() == 'false' ? false : true,
-    dialog: false,
-    recoveryCode: ''
-  }),
-  created() {
-    this.getProfile()
-    this.getUsername()
+  name: 'Settings',
+  data() {
+    return {
+      username: '',
+      email: '',
+      profile: '',
+      snackbarSuccess: false,
+      snackbarError: false,
+      snackbarMessage: '',
+      editAccountBtn: true,
+      updateAccountBtn: false,
+      editProfileBtn: true,
+      updateProfileBtn: false,
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+      updatePasswordBtn: false,
+      tfaPassword: '',
+      tfaEnabled: TokenService.getTfaState() === 'false' ? false : true,
+      generateSecretBtn: false,
+      tfaSecret: null,
+      base32secret: null,
+      qrImage: null,
+      securityCode: null,
+      verifyTfaBtn: false,
+      recoveryCode: null,
+      recoverCodeDialog: false,
+      disableBtnLoading: false,
+      viewBtnLoading: false,
+      validAccountForm: false,
+      notEmptyRule(property) {
+        return v => (v && v.length > 0) || `${property} cannot be empty.`
+      },
+      emailRule() {
+        return v => /.+@.+\..+/.test(v) || 'E-mail must be valid.'
+      },
+      validProfileForm: false
+    }
   },
   methods: {
-    getUsername() {
-      ApiService.get('/account/')
+    getAccount() {
+      ApiService.get('/account')
         .then(res => {
           this.username = res.data.account.username
           this.email = res.data.account.email
         })
-        .catch(err => console.log(err))
+        .catch(() => console.log('Failed to get account details.'))
     },
-
     getProfile() {
       ApiService.get('/profile')
-        .then(res => (this.fullname = res.data.profile.fullname))
+        .then(res => {
+          this.profile = res.data.profile
+          if (res.data.profile.dateOfBirth) {
+            this.profile.dateOfBirth = this.$options.filters.formatDOB(
+              this.profile.dateOfBirth
+            )
+          }
+        })
+        .catch(() => {
+          console.log('Failed to get profile details.')
+        })
+    },
+    updateEmail() {
+      this.updateAccountBtn = true
+      ApiService.put('/account/update-email', { email: this.email })
+        .then(res => {
+          this.updateAccountBtn = false
+          this.snackbarSuccess = true
+          this.snackbarMessage = res.data.message
+          this.editAccountBtn = true
+          this.getAccount()
+        })
         .catch(err => {
+          this.updateAccountBtn = false
           this.snackbarError = true
           this.snackbarMessage = err.response.data.message
+          this.editAccountBtn = true
+          this.getAccount()
         })
     },
     updateProfile() {
-      const data = {
-        fullname: this.fullname,
-        dateOfBirth: this.dateOfBirth
-      }
-      if (data.dateOfBirth == '') {
-        delete data.dateOfBirth
-      }
-      this.profileLoading = true
-      ApiService.put('profile/update-profile', data)
+      this.updateProfileBtn = true
+      ApiService.put('/profile/update-profile', {
+        fullname: this.profile.fullname
+      })
         .then(res => {
-          this.disableField1 = !this.disableField1
-          this.disableButton1 = !this.disableButton1
-          this.profileLoading = false
+          this.updateProfileBtn = false
           this.snackbarSuccess = true
           this.snackbarMessage = res.data.message
+          this.editProfileBtn = true
+          this.getProfile()
         })
         .catch(err => {
-          this.profileLoading = false
-          this.btnLoading = false
+          this.updateProfileBtn = false
+          this.snackbarError = true
+          this.snackbarMessage = err.response.data.message
+          this.editProfileBtn = true
+          this.getProfile()
+        })
+    },
+    updatePassword() {
+      if (
+        this.currentPassword === '' ||
+        this.newPassword === '' ||
+        this.confirmPassword === ''
+      ) {
+        this.updatePasswordBtn = false
+        this.snackbarError = true
+        this.snackbarMessage = 'Password field are required.'
+        return
+      }
+
+      if (this.newPassword !== this.confirmPassword) {
+        this.updatePasswordBtn = false
+        this.snackbarError = true
+        this.snackbarMessage = "New passwords don't match."
+        return
+      }
+
+      this.updatePasswordBtn = true
+      ApiService.put('/account/update-password', {
+        currentPassword: this.currentPassword,
+        newPassword: this.newPassword,
+        confirmPassword: this.confirmPassword
+      })
+        .then(res => {
+          this.updatePasswordBtn = false
+          this.snackbarSuccess = true
+          this.snackbarMessage = res.data.message
+          this.currentPassword = ''
+          this.newPassword = ''
+          this.confirmPassword = ''
+        })
+        .catch(err => {
+          this.updatePasswordBtn = false
           this.snackbarError = true
           this.snackbarMessage = err.response.data.message
         })
     },
-
-    updatePassword() {
-      if (
-        this.newPwd == this.confirmPwd &&
-        this.newPwd != '' &&
-        this.confirmPwd != ''
-      ) {
-        this.changePwdLoading = true
-        const data = {
-          currentPassword: this.currentPwd,
-          newPassword: this.newPwd,
-          confirmPassword: this.confirmPwd
-        }
-        ApiService.put('account/update-password', data)
-          .then(res => {
-            this.disableField2 = !this.disableField2
-            this.disableButton2 = !this.disableButton2
-            this.newPwd = ''
-            this.currentPwd = ''
-            this.confirmPwd = ''
-            this.changePwdLoading = false
-            this.snackbarSuccess = true
-            this.snackbarMessage = res.data.message
-          })
-          .catch(err => {
-            this.changePwdLoading = false
-            this.snackbarError = true
-            this.snackbarMessage = err.response.data.message
-          })
-      } else {
+    generateTfaSecret() {
+      if (this.tfaPassword === '') {
+        this.generateSecretBtn = false
         this.snackbarError = true
-        this.snackbarMessage = 'Password mismatch. Please try again.'
+        this.snackbarMessage = 'Password field is required.'
+        return
       }
-    },
-    generateQr(otpAuth) {
-      var url = otpAuth
-      var qrImg = ''
-      QRCode.toDataURL(url, (err, dataURL) => {
-        qrImg = dataURL
+
+      this.generateSecretBtn = true
+      ApiService.post('/two-factor/get-authenticator', {
+        password: this.tfaPassword
       })
-      return qrImg
-    },
-    enableTwoFa() {
-      // check if password is not empty
-      if (this.tfapassword != '') {
-        const data = {
-          password: this.tfapassword
-        }
-        this.twofaButtonLoading = true
-        this.tfapassword = ''
-        ApiService.post('two-factor/get-authenticator', data)
-          .then(res => {
-            this.twofaButtonLoading = false
-            this.twofaButtonSwitch = true
-            this.confirmButtonShow = true
-            const otpAuth = res.data.secret.otpauth_url
-            const qrImg = this.generateQr(otpAuth)
-            if (qrImg != '') {
-              this.tempSecret = res.data.secret.base32
-              this.qrImage = qrImg
-              this.showQrImage = true
-            } else {
-              this.snackbarError = true
-              this.snackbarMessage = 'QR Image failed to generate.'
-            }
-          })
-          .catch(err => {
-            this.twofaButtonLoading = false
-            this.snackbarError = true
-            this.snackbarMessage = err.response.data.message
-          })
-      } else {
-        this.snackbarError = true
-        this.snackbarMessage = 'Password field is empty. Please try again.'
-      }
-    },
+        .then(res => {
+          this.generateSecretBtn = false
+          this.tfaPassword = ''
+          this.tfaSecret = res.data.secret
 
-    confirmSecurityCode() {
-      if (this.securityCode != '') {
-        const data = {
-          secret: this.tempSecret,
-          token: this.securityCode
-        }
-        this.securityCode = ''
-        this.confirmLoading = true
-        ApiService.post('two-factor/enable', data)
-          .then(res => {
-            this.confirmLoading = false
-            // change user state
-            //this.enableButton = false
-            TokenService.setTfaState(true)
-            this.tfa_state = true
-            this.confirmButtonShow = false
-
-            const token = res.data.token
-            // update token into local storage
-            TokenService.removeToken()
-            ApiService.removeHeader()
-            TokenService.saveToken(token)
-            ApiService.setHeader()
-            this.snackbarSuccess = true
-            this.snackbarMessage = res.data.message
-            this.showQrImage = false
-            this.recoveryCode = res.data.recoveryCode
-            setTimeout(() => (this.dialog = true), 1000)
+          this.base32secret = this.tfaSecret.base32
+          const otpAuth = this.tfaSecret.otpauth_url
+          QRCode.toDataURL(otpAuth, (err, dataURL) => {
+            this.qrImage = dataURL
           })
-          .catch(err => {
-            this.confirmLoading = false
-            this.snackbarError = true
-            this.snackbarMessage = err.response.data.message
-          })
-      } else {
-        this.snackbarError = true
-        this.snackbarMessage = 'Security code field is empty. Please try again.'
-      }
+        })
+        .catch(err => {
+          this.generateSecretBtn = false
+          this.snackbarError = true
+          this.snackbarMessage = err.response.data.message
+        })
     },
-    disableTwoFa() {
-      if (this.tfapassword != '') {
-        const data = {
-          password: this.tfapassword
-        }
-        this.tfapassword = ''
-        ApiService.post('/two-factor/disable', data)
-          .then(res => {
-            if (res.data.error == false) {
-              // disabled and switch disable to enable button
-              TokenService.setTfaState(false)
-              this.tfa_state = false
-              this.twofaButtonSwitch = false
-              this.snackbarSuccess = true
-              this.snackbarMessage = res.data.message
-            }
-          })
-          .catch(err => {
-            this.confirmLoading = false
-            this.snackbarError = true
-            this.snackbarMessage = err.response.data.message
-          })
-      } else {
+    enableTfa() {
+      if (this.securityCode === null || this.securityCode === '') {
+        this.verifyTfaBtn = false
         this.snackbarError = true
-        this.snackbarMessage = 'Password field is empty. Please try again.'
+        this.snackbarMessage = 'Security code is required.'
+        return
       }
+
+      this.verifyTfaBtn = true
+      ApiService.post('/two-factor/enable', {
+        secret: this.base32secret,
+        token: this.securityCode
+      })
+        .then(res => {
+          this.verifyTfaBtn = false
+          this.snackbarSuccess = true
+          this.snackbarMessage = res.data.message
+
+          // on success, clear the variables
+          this.tfaSecret = null
+          this.base32secret = null
+          this.qrImage = null
+          this.securityCode = null
+
+          // set the 2fa state to true
+          TokenService.saveTfaState(true)
+          this.tfaEnabled = true
+
+          // clear the current jwt, save the new jwt
+          TokenService.removeToken()
+          ApiService.removeHeader()
+          TokenService.saveToken(res.data.token)
+          ApiService.setHeader()
+
+          // show the recovery code
+          this.recoveryCode = res.data.recoveryCode
+          this.recoverCodeDialog = true
+        })
+        .catch(err => {
+          this.verifyTfaBtn = false
+          this.snackbarError = true
+          this.snackbarMessage = err.response.data.message
+        })
+    },
+    getRecoveryCode() {
+      this.viewBtnLoading = true
+      ApiService.get('/two-factor/get-recovery-code')
+        .then(res => {
+          this.viewBtnLoading = false
+          this.recoveryCode = res.data.recoveryCode
+          this.recoverCodeDialog = true
+        })
+        .catch(err => {
+          this.viewBtnLoading = false
+          this.snackbarError = true
+          this.snackbarMessage = err.response.data.message
+        })
+    },
+    disableTfa() {
+      if (this.tfaPassword === '') {
+        this.generateSecretBtn = false
+        this.snackbarError = true
+        this.snackbarMessage = 'Password field is required.'
+        return
+      }
+
+      this.disableBtnLoading = true
+      ApiService.post('/two-factor/disable', {
+        password: this.tfaPassword
+      })
+        .then(res => {
+          this.disableBtnLoading = false
+          this.snackbarSuccess = true
+          this.snackbarMessage = res.data.message
+
+          this.tfaPassword = ''
+
+          // set the 2fa state to false
+          TokenService.saveTfaState(false)
+          this.tfaEnabled = false
+        })
+        .catch(err => {
+          this.disableBtnLoading = false
+          this.snackbarError = true
+          this.snackbarMessage = err.response.data.message
+        })
     }
+  },
+  created() {
+    this.getAccount()
+    this.getProfile()
   }
 }
 </script>
 
-<style>
-.custom-loader {
-  animation: loader 1s infinite;
-  display: flex;
-}
-@-moz-keyframes loader {
-  from {
-    transform: rotate(0);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-@-webkit-keyframes loader {
-  from {
-    transform: rotate(0);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-@-o-keyframes loader {
-  from {
-    transform: rotate(0);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-@keyframes loader {
-  from {
-    transform: rotate(0);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-</style>
+<style></style>
