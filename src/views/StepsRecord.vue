@@ -1,64 +1,57 @@
 <template>
-  <div class="step-record">
-    <v-container fluid>
-      <h1>Steps Record</h1>
-      <v-divider></v-divider>
-      <br />
+  <v-container fluid>
+    <h1 class="headline ma-4">Steps Record</h1>
+    <v-divider></v-divider>
 
-      <v-data-table
-        :headers="headers"
-        :items="records"
-        sort-by="calories"
-        class="elevation-1 v-table black--text"
-      >
-        <template v-slot:top>
-          <v-toolbar flat color="white">
-            <v-spacer></v-spacer>
-            <v-dialog v-model="dialog" max-width="500px">
-              <template v-slot:activator="{ on }">
-                <v-btn color="primary" dark class="mb-2" v-on="on"
-                  >New Record</v-btn
-                >
-              </template>
-              <v-card>
-                <v-card-title>
-                  <span class="headline">{{ formTitle }}</span>
-                </v-card-title>
+    <v-data-table
+      :headers="headers"
+      :items="records"
+      :loading="loading"
+      sort-by="calories"
+      :sort-desc="true"
+      class="elevation-1 v-table black--text mt-4"
+    >
+      <template v-slot:top>
+        <v-toolbar flat color="white">
+          <v-spacer></v-spacer>
+          <v-dialog v-model="dialog" max-width="500px">
+            <template v-slot:activator="{ on }">
+              <v-btn color="primary" dark class="mb-2" v-on="on"
+                >New Record</v-btn
+              >
+            </template>
+            <v-card>
+              <v-toolbar color="primary" dark flat>
+                <v-toolbar-title>{{ formTitle }}</v-toolbar-title>
+              </v-toolbar>
 
-                <v-card-text>
-                  <v-container>
-                    <v-row>
-                      <v-col cols="8">
-                        <v-text-field
-                          v-model="editedItem.totalSteps"
-                          label="Total Steps"
-                        ></v-text-field>
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                </v-card-text>
+              <v-card-text>
+                <v-container>
+                  <v-row>
+                    <v-col cols="8">
+                      <v-text-field
+                        v-model="editedItem.totalSteps"
+                        label="Total Steps"
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-card-text>
 
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="close"
-                    >Cancel</v-btn
-                  >
-                  <v-btn color="blue darken-1" text @click="save">Save</v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-          </v-toolbar>
-        </template>
-        <template v-slot:item.action="{ item }">
-          <v-icon small class="mr-2" @click="editItem(item)">
-            mdi-pencil
-          </v-icon>
-          <v-icon small @click="deleteItem(item)">
-            mdi-delete
-          </v-icon>
-        </template>
-      </v-data-table>
-    </v-container>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="error" @click="close">Cancel</v-btn>
+                <v-btn color="success" @click="save">Save</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-toolbar>
+      </template>
+      <template v-slot:item.action="{ item }">
+        <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
+        <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
+      </template>
+    </v-data-table>
 
     <v-snackbar
       v-model="snackbarSuccess"
@@ -94,7 +87,7 @@
         >Close</v-btn
       >
     </v-snackbar>
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -102,15 +95,16 @@ import ApiService from '@/services/api.service'
 export default {
   data: () => ({
     dialog: false,
+    loading: false,
     headers: [
       {
         text: 'Date',
-        align: 'left',
         value: 'dateRecorded'
       },
-      { text: 'Total Steps', align: 'center', value: 'totalSteps' },
-      { text: 'Actions', align: 'center', value: 'action', sortable: false }
+      { text: 'Total Steps', value: 'totalSteps' },
+      { text: 'Actions', value: 'action', sortable: false }
     ],
+    records: [],
     editedIndex: -1,
     editedItem: {
       totalSteps: '0'
@@ -119,7 +113,6 @@ export default {
       totalSteps: '0'
     },
 
-    records: [],
     //my data
     snackbarSuccess: false,
     snackbarError: false,
@@ -143,8 +136,10 @@ export default {
   methods: {
     // get steps record api
     getStepsRecord() {
+      this.loading = true
       ApiService.get('/steps-record')
         .then(res => {
+          this.loading = false
           this.records = res.data.records
           this.records.forEach(record => {
             record.dateRecorded =
@@ -154,10 +149,9 @@ export default {
               '-' +
               new Date(record.dateRecorded).getFullYear()
           })
-          this.snackbarSuccess = true
-          this.snackbarMessage = res.data.message
         })
         .catch(err => {
+          this.loading = false
           this.snackbarError = true
           this.snackbarMessage = err.response.data.message
         })
@@ -266,7 +260,6 @@ export default {
         const id = this.records[this.editedIndex]._id
         const stepsVal = this.editedItem.totalSteps
         this.updateStepsRecord(id, stepsVal)
-        console.log(id)
       } else {
         // create
         this.createStepsRecord(this.editedItem.totalSteps)
@@ -277,12 +270,4 @@ export default {
 }
 </script>
 
-<style>
-th {
-  font-size: 25px !important;
-}
-
-td {
-  font-size: 15px !important;
-}
-</style>
+<style></style>
