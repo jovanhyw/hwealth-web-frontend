@@ -61,36 +61,34 @@ const ApiService = {
       },
       async error => {
         if (error.response.status == 401) {
-          // when 401 is received, clear localStorage
+          // when 401 is received
+
+          // token not valid, redirect to login
+          if (error.response.data.message === 'Invalid token.') {
+            store.dispatch(LOGOUT)
+            router.push({ name: 'login' }).catch(() => {})
+          }
+
+          // 2FA enabled but token says 2FA auth not verified
           if (
             error.response.data.message ===
             'Two Factor Authentication is enabled but Two Factor Authentication has not passed.'
           ) {
-            TokenService.removeToken()
-            store.dispatch(LOGOUT)
-            router.push({ name: 'login' })
-            throw error
-          } else if (error.response.data.message === 'Invalid token.') {
-            TokenService.removeToken()
-            store.dispatch(LOGOUT)
-            router.push({ name: 'login' })
-            throw error
-          } else {
-            console.log(
-              'Debug [different response msg]: ',
-              error.response.data.message
-            )
+            router.push({ name: 'tfa' }).catch(() => {})
           }
-        }
-        if (error.response.status == 403) {
-          router.push({ name: 'forbiddenpage' })
+
           throw error
         }
 
-        if (error.response.status == 404) {
-          router.push({ name: 'notfoundpage' })
-          throw error
-        }
+        // if (error.response.status == 403) {
+        //   router.push({ name: 'forbiddenpage' })
+        //   throw error
+        // }
+
+        // if (error.response.status == 404) {
+        //   router.push({ name: 'notfoundpage' })
+        //   throw error
+        // }
 
         // error not caused by 401, 403 or 404
         throw error
