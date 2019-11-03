@@ -1,11 +1,11 @@
 <template>
   <v-container fill-height>
     <v-row align="center" justify="center">
-      <v-col cols="6" justify="center" sm="3">
+      <v-col cols="6" justify="center" sm="3" lg="6" class="hidden-xs-only">
         <v-img src="/img/about.svg"></v-img>
       </v-col>
 
-      <v-col cols="6" sm="4">
+      <v-col cols="6" sm="4" lg="6">
         <div class="title">About Us</div>
         <div class="subtitle-2 mt-3">
           HWealth was founded on the belief that we as individuals should care
