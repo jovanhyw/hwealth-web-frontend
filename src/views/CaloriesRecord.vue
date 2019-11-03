@@ -183,7 +183,7 @@
                     <v-text-field v-model="newRecordFoodEaten[i - 1].foodName" label="Food"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="6">
-                    <v-text-field v-model="newRecordFoodEaten[i - 1].calories" label="Calories"></v-text-field>
+                    <v-text-field type="number" v-model.number="newRecordFoodEaten[i - 1].calories" label="Calories"></v-text-field>
                   </v-col>
                 </v-row>
               </v-container>
@@ -213,7 +213,7 @@
                     <v-text-field v-model="record.foodName" label="Food"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="6">
-                    <v-text-field v-model="record.calories" label="Calories"></v-text-field>
+                    <v-text-field type="number" v-model.number="record.calories" label="Calories"></v-text-field>
                   </v-col>
                 </v-row>
                 </div>
@@ -266,7 +266,7 @@ export default {
   computed: {
       formTitle () {
         return this.editedIndex === -1 ? 'New Record' : 'Edit Record'
-      },
+      }
     },
   watch: {
     dialog (val) {
@@ -335,6 +335,8 @@ export default {
           return
         }
       }
+
+      
       const d = new Date()
       const data = {
         "dateRecorded": d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getUTCDate(),
