@@ -67,6 +67,22 @@ const routes = [
     }
   },
   {
+    path: '/account/recover',
+    name: 'account-recover',
+    component: () => import('@/views/AccountRecover'),
+    meta: {
+      public: true
+    }
+  },
+  {
+    path: '/account/tfa-disabled',
+    name: 'tfa-disabled',
+    component: () => import('@/views/TfaDisabled'),
+    meta: {
+      public: true
+    }
+  },
+  {
     path: '/dashboard',
     name: 'dashboard',
     component: () => import('@/views/Dashboard')
@@ -76,7 +92,6 @@ const routes = [
     name: 'settings',
     component: () => import('@/views/Settings')
   },
-
   {
     path: '/tfa',
     name: 'tfa',

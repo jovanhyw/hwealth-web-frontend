@@ -50,13 +50,19 @@
 
                   <div class="ma-2 subtitle-2">
                     <a href="/forgot-password">
-                      <i>Forgotten Password</i>
+                      <i>Forgot Password</i>
                     </a>
                   </div>
 
                   <div class="ma-2 subtitle-2">
                     <a href="/resend-email-token">
                       <i>Did not receive email verification</i>
+                    </a>
+                  </div>
+
+                  <div class="ma-2 subtitle-2">
+                    <a href="/account/recover">
+                      <i>I lost access to my Authenticator device</i>
                     </a>
                   </div>
                 </v-card-text>
@@ -120,7 +126,6 @@ export default {
           this.$router.push({ name: 'dashboard' })
         })
         .catch(err => {
-          console.log(err)
           this.btnLoading = false
           this.snackbarError = true
           this.snackbarMessage = err.response.data.message

@@ -4,16 +4,40 @@
       <v-col cols="6" md="5" lg="4">
         <v-card class="elevation-4">
           <v-toolbar color="deep-purple accent-4" dark flat>
-            <v-toolbar-title>Forgot Password</v-toolbar-title>
+            <v-toolbar-title>Recover Account</v-toolbar-title>
           </v-toolbar>
-          <v-form @submit.prevent="forgotPass" v-model="validForm">
+          <v-form @submit.prevent="recoverTfa" v-model="validForm">
             <v-card-text>
               <v-text-field
-                label="Email"
-                prepend-icon="mdi-email"
+                label="Username"
+                prepend-icon="mdi-account"
                 type="text"
-                v-model="email"
-                :rules="[notEmptyRule('Email'), emailRule()]"
+                v-model="username"
+                :rules="[notEmptyRule('Username')]"
+                filled
+                rounded
+                dense
+              />
+              <v-text-field
+                label="Password"
+                prepend-icon="mdi-lock"
+                type="password"
+                autocomplete="off"
+                v-model="password"
+                :rules="[notEmptyRule('Password')]"
+                filled
+                rounded
+                dense
+              />
+              <v-text-field
+                label="Recovery Code"
+                prepend-icon="mdi-lock-plus"
+                type="text"
+                v-model="recoveryCode"
+                :rules="[notEmptyRule('Recovery code')]"
+                filled
+                rounded
+                dense
               />
             </v-card-text>
             <v-card-actions class="justify-center">
@@ -23,7 +47,7 @@
                 class="mb-2"
                 :loading="btnLoading"
                 :disabled="!validForm"
-                >Resend Email</v-btn
+                >Recover Account</v-btn
               >
             </v-card-actions>
           </v-form>
@@ -65,12 +89,12 @@
 
 <script>
 import ApiService from '@/services/api.service'
+import { LOGOUT } from '../store/modules/actions.type'
 
 export default {
-  name: 'ForgotPassword',
+  name: 'ResendEmail',
   data() {
     return {
-      email: '',
       snackbarSuccess: false,
       snackbarError: false,
       snackbarMessage: '',
@@ -78,22 +102,27 @@ export default {
       notEmptyRule(property) {
         return v => (v && v.length > 0) || `${property} cannot be empty.`
       },
-      emailRule() {
-        return v => /.+@.+\..+/.test(v) || 'E-mail must be valid.'
-      },
-      validForm: false
+      validForm: false,
+      username: '',
+      password: '',
+      recoveryCode: ''
     }
   },
   methods: {
-    forgotPass() {
+    recoverTfa() {
       this.btnLoading = true
-      ApiService.post('/account/forgot-password', {
-        email: this.email
+      ApiService.post('/two-factor/recover', {
+        username: this.username,
+        password: this.password,
+        recoveryCode: this.recoveryCode
       })
         .then(res => {
           this.btnLoading = false
           this.snackbarSuccess = true
           this.snackbarMessage = res.data.message
+
+          this.$store.dispatch(LOGOUT)
+          this.$router.push({ name: 'tfa-disabled' }).catch(() => {})
         })
         .catch(err => {
           this.btnLoading = false
