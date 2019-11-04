@@ -15,6 +15,8 @@
         >
           new record
         </v-btn>
+        <div v-if="records != null">
+          <h1> hit</h1>
         <v-card class="mb-5" v-for="(record, index) in records" :key="index">
           <v-container>
             <v-row>
@@ -60,6 +62,7 @@
               :items-per-page.sync="itemsPerPage"
               :footer-props="{ itemsPerPageOptions }"
             >
+            
               <template v-slot:default="props">
                 <v-row>
                   <v-col
@@ -111,6 +114,7 @@
             </v-data-iterator>
           </v-container>
         </v-card>
+        </div>
 
         <v-snackbar
           v-model="snackbarSuccess"
