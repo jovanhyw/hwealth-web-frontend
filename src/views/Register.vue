@@ -18,11 +18,16 @@
                 <v-divider></v-divider>
 
                 <v-card-text>
-                  <v-form @submit.prevent="validateForm">
+                  <v-form @submit.prevent="validateForm" v-model="validForm">
                     <v-text-field
                       label="Full Name"
                       prepend-icon="mdi-account-badge-horizontal"
                       v-model="accountInfo.fullname"
+                      :rules="[
+                        notEmptyRule('Full name'),
+                        fullnameRule(),
+                        fullnameLengthRule()
+                      ]"
                       filled
                       rounded
                       dense
@@ -32,6 +37,11 @@
                       label="Username"
                       prepend-icon="mdi-account"
                       v-model="accountInfo.username"
+                      :rules="[
+                        notEmptyRule('Username'),
+                        usernameRule(),
+                        usernameLengthRule()
+                      ]"
                       filled
                       rounded
                       dense
@@ -42,6 +52,7 @@
                       type="password"
                       autocomplete="off"
                       v-model="accountInfo.password"
+                      :rules="[notEmptyRule('Password'), passwordRule()]"
                       filled
                       rounded
                       dense
@@ -50,15 +61,16 @@
                       label="Email"
                       prepend-icon="mdi-email"
                       v-model="accountInfo.email"
+                      :rules="[notEmptyRule('Email'), emailRule()]"
                       filled
                       rounded
                       dense
                     ></v-text-field>
                     <v-btn
-                      dark
-                      color="deep-purple accent-4"
+                      color="primary"
                       type="submit"
                       :loading="btnLoading"
+                      :disabled="!validForm"
                       rounded
                       >Register</v-btn
                     >
@@ -119,7 +131,35 @@ export default {
       snackbarSuccess: false,
       snackbarError: false,
       snackbarMessage: '',
-      btnLoading: false
+      btnLoading: false,
+      notEmptyRule(property) {
+        return v => (v && v.length > 0) || `${property} cannot be empty.`
+      },
+      emailRule() {
+        return v => /.+@.+\..+/.test(v) || 'E-mail must be valid.'
+      },
+      fullnameRule() {
+        return v => /^[a-zA-Z ,.'-]+$/.test(v) || 'Invalid full name.'
+      },
+      fullnameLengthRule() {
+        return v =>
+          (v && v.length <= 80 && v.length >= 3) || 'Fullname length invalid.'
+      },
+      usernameRule() {
+        return v => /^[a-zA-Z0-9]+\S*$/.test(v) || 'Invalid username.'
+      },
+      usernameLengthRule() {
+        return v =>
+          (v && v.length <= 30 && v.length >= 5) || 'Username length invalid.'
+      },
+      passwordRule() {
+        return v =>
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*<>])(?=.{8,64})(?=.\S*$)/.test(
+            v
+          ) ||
+          'Password must contain 1 Uppercase, 1 Lowercase, 1 Number, 1 Special Character, a minimum of 8 characters in total, and no white spaces.'
+      },
+      validForm: false
     }
   },
   methods: {

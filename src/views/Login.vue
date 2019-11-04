@@ -18,11 +18,12 @@
                 <v-divider></v-divider>
 
                 <v-card-text>
-                  <v-form @submit.prevent="login">
+                  <v-form @submit.prevent="login" v-model="validForm">
                     <v-text-field
                       label="Username"
                       prepend-icon="mdi-account"
                       v-model="username"
+                      :rules="[notEmptyRule('Username')]"
                       filled
                       rounded
                       dense
@@ -33,16 +34,17 @@
                       type="password"
                       autocomplete="off"
                       v-model="password"
+                      :rules="[notEmptyRule('Password')]"
                       filled
                       rounded
                       dense
                     ></v-text-field>
 
                     <v-btn
-                      dark
-                      color="deep-purple accent-4"
+                      color="primary"
                       type="submit"
                       :loading="btnLoading"
+                      :disabled="!validForm"
                       rounded
                       >Login</v-btn
                     >
@@ -102,7 +104,11 @@ export default {
       password: '',
       snackbarError: false,
       snackbarMessage: '',
-      btnLoading: false
+      btnLoading: false,
+      notEmptyRule(property) {
+        return v => (v && v.length > 0) || `${property} cannot be empty.`
+      },
+      validForm: false
     }
   },
   methods: {
