@@ -11,7 +11,7 @@
             <v-col align="center">
               <v-card tile flat>
                 <v-card-title
-                  class="display-1 font-weight-bold font-weight-black font-italic blue-grey--text justify-center"
+                  class="title font-weight-bold font-weight-black font-italic black--text justify-center"
                   >Login</v-card-title
                 >
 
@@ -137,7 +137,8 @@ export default {
 
 <style scoped>
 .v-card {
-  border: 4px solid #6200ea;
+  /* border: 4px solid #6200ea; */
   border-radius: 20px;
+  background-image: url('/img/cool-background.png');
 }
 </style>

@@ -11,7 +11,7 @@
             <v-col align="center">
               <v-card tile flat>
                 <v-card-title
-                  class="display-1 font-weight-bold font-weight-black font-italic blue-grey--text justify-center"
+                  class="display-1 font-weight-bold font-weight-black font-italic black--text justify-center"
                   >Register with us!</v-card-title
                 >
 
@@ -149,7 +149,8 @@ export default {
 .v-card {
   /* border-left: 4px solid #6200ea;
   border-right: 4px solid #6200ea; */
-  border: 4px solid #6200ea;
+  /* border: 4px solid #6200ea; */
   border-radius: 20px;
+  background-image: url('/img/cool-background.png');
 }
 </style>
