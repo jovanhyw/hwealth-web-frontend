@@ -16,7 +16,6 @@
           new record
         </v-btn>
         <div v-if="records != null">
-          <h1> hit</h1>
         <v-card class="mb-5" v-for="(record, index) in records" :key="index">
           <v-container>
             <v-row>
@@ -332,9 +331,16 @@ export default {
     getCaloriesRecord() {
       ApiService.get('/calories-record')
         .then(res => {
-          this.records = res.data.records
-          this.snackbarSuccess = true
-          this.snackbarMessage = res.data.message
+          if(res.data.records.length > 0) {
+            this.records = res.data.records
+            this.snackbarSuccess = true
+            this.snackbarMessage = res.data.message
+          } else {
+            this.records = null
+            this.snackbarSuccess = true
+            this.snackbarMessage = res.data.message
+
+          }
         })
         .catch(err => {
           this.snackbarError = true
