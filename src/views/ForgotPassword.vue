@@ -23,7 +23,7 @@
                 class="mb-2"
                 :loading="btnLoading"
                 :disabled="!validForm"
-                >Resend Email</v-btn
+                >Reset Password</v-btn
               >
             </v-card-actions>
           </v-form>
