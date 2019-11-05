@@ -15,13 +15,24 @@
     <v-divider></v-divider>
 
     <div align="center" justify="center">
+      <!-- Loading circle -->
+      <v-progress-circular
+        :indeterminate="loading"
+        class="mt-12"
+        color="primary"
+        v-if="loading === true"
+      ></v-progress-circular>
+
+      <!-- If no records -->
       <div
-        v-if="allStepsRecords.length == 0"
+        v-if="loading !== true && allStepsRecords.length == 0"
         class="title grey--text text--lighten-1 mt-12"
       >
         It looks empty here. Click on the 'Add New Record' button to start
         tracking your steps!
       </div>
+
+      <!-- There are records -->
       <v-card
         max-width="50%"
         class="my-2 wow"
@@ -264,12 +275,12 @@ export default {
       editDialog: false,
       editDialogData: null,
       deleteDialog: false,
-      deleteDialogData: null
+      deleteDialogData: null,
+      loading: true
     }
   },
   methods: {
     getStepsRecord() {
-      this.loading = true
       ApiService.get('/steps-record')
         .then(res => {
           this.allStepsRecords = res.data.records
