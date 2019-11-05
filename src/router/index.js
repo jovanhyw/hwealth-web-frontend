@@ -115,11 +115,6 @@ const routes = [
     path: '/chats/',
     name: 'chats',
     component: () => import('@/views/Chats')
-  },
-  {
-    path: '/testchats/',
-    name: 'testchats',
-    component: () => import('@/views/testChats')
   }
 ]
 
