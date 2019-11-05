@@ -115,6 +115,12 @@ const routes = [
     path: '/chats/',
     name: 'chats',
     component: () => import('@/views/Chats')
+  },
+  {
+    // For any other routes that dont exist, redirect to /
+    // TODO: Can add a 404 Page
+    path: '/*',
+    redirect: '/'
   }
 ]
 
