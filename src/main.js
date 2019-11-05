@@ -5,8 +5,6 @@ import store from './store'
 import vuetify from './plugins/vuetify'
 import ApiService from './services/api.service'
 import { TokenService } from './services/storage.service'
-import { ValidationProvider, extend } from 'vee-validate'
-import { required } from 'vee-validate/dist/rules'
 import Chat from 'vue-beautiful-chat'
 
 Vue.use(Chat)
@@ -21,14 +19,6 @@ ApiService.mountInterceptor()
 if (TokenService.getToken()) {
   ApiService.setHeader()
 }
-
-// Vee-Validate stuff
-extend('required', {
-  ...required,
-  message: 'This field is required'
-})
-
-Vue.component('ValidationProvider', ValidationProvider)
 
 new Vue({
   router,
