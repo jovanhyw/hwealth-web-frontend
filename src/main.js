@@ -6,6 +6,7 @@ import vuetify from './plugins/vuetify'
 import ApiService from './services/api.service'
 import { TokenService } from './services/storage.service'
 import Chat from 'vue-beautiful-chat'
+import moment from 'moment'
 
 Vue.use(Chat)
 
@@ -19,6 +20,18 @@ ApiService.mountInterceptor()
 if (TokenService.getToken()) {
   ApiService.setHeader()
 }
+
+Vue.filter('prettyDOB', function(value) {
+  if (value) {
+    return moment(String(value)).format('DD MMM YYYY')
+  }
+})
+
+Vue.filter('formatDOB', function(value) {
+  if (value) {
+    return moment(String(value)).format('YYYY-MM-DD')
+  }
+})
 
 new Vue({
   router,
