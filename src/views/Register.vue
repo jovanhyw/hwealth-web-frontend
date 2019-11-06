@@ -146,7 +146,7 @@ export default {
           (v && v.length <= 80 && v.length >= 3) || 'Fullname length invalid.'
       },
       usernameRule() {
-        return v => /^[a-zA-Z0-9]+\S*$/.test(v) || 'Invalid username.'
+        return v => /^[a-zA-Z0-9]{3,30}$/.test(v) || 'Invalid username.'
       },
       usernameLengthRule() {
         return v =>
