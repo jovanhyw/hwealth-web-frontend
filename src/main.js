@@ -7,8 +7,10 @@ import ApiService from './services/api.service'
 import { TokenService } from './services/storage.service'
 import Chat from 'vue-beautiful-chat'
 import moment from 'moment'
+import { VueReCaptcha } from 'vue-recaptcha-v3'
 
 Vue.use(Chat)
+Vue.use(VueReCaptcha, { siteKey: '6LenTcEUAAAAAIeBxuneJHJXb0QWqw55vznSSN3E' }) // not sure if site key can be public
 
 Vue.config.productionTip = false
 

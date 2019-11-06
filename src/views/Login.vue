@@ -67,6 +67,20 @@
                       <i>I lost access to my Authenticator device</i>
                     </a>
                   </div>
+
+                  <v-divider></v-divider>
+
+                  <div class="subtitle-2 grey--text text--darken-2 mt-2">
+                    This site is protected by reCAPTCHA and the Google
+                    <a href="https://policies.google.com/privacy"
+                      >Privacy Policy</a
+                    >
+                    and
+                    <a href="https://policies.google.com/terms"
+                      >Terms of Service</a
+                    >
+                    apply.
+                  </div>
                 </v-card-text>
               </v-card>
             </v-col>
@@ -95,6 +109,7 @@
 <script>
 import { LOGIN } from '../store/modules/actions.type'
 import { TokenService } from '@/services/storage.service'
+import ApiService from '@/services/api.service'
 
 export default {
   name: 'Login',
@@ -112,26 +127,49 @@ export default {
     }
   },
   methods: {
-    login() {
+    async login() {
       let username = this.username
       let password = this.password
       this.btnLoading = true
-      this.$store
-        .dispatch(LOGIN, { username, password })
+
+      // send to grecaptcha
+      const rToken = await this.$recaptcha('register')
+
+      ApiService.post('/captcha/v3', { captchaResponse: rToken })
         .then(res => {
-          this.btnLoading = false
+          // only if res msg is Success!
+          // post to login
+          if (res.data.message === 'Success!') {
+            this.$store
+              .dispatch(LOGIN, { username, password })
+              .then(res => {
+                this.btnLoading = false
 
-          /**
-           * If account has 2FA enabled, direct to 2FA page
-           */
-          if (res.twoFactorEnabled) {
-            TokenService.saveTfaAuth(false)
-            return this.$router.push({ name: 'tfa' })
+                /**
+                 * If account has 2FA enabled, direct to 2FA page
+                 */
+                if (res.twoFactorEnabled) {
+                  TokenService.saveTfaAuth(false)
+                  return this.$router.push({ name: 'tfa' })
+                }
+
+                this.$router.push({ name: 'dashboard' })
+              })
+              .catch(err => {
+                this.btnLoading = false
+                this.snackbarError = true
+                this.snackbarMessage = err.response.data.message
+              })
+          } else {
+            // other message means the captcha failed
+            // in this case we do nothing
+            this.btnLoading = false
+            return
           }
-
-          this.$router.push({ name: 'dashboard' })
         })
         .catch(err => {
+          // Google gave backend error
+          // backend return 400 Bad Request
           this.btnLoading = false
           this.snackbarError = true
           this.snackbarMessage = err.response.data.message
