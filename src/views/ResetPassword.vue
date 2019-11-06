@@ -14,7 +14,7 @@
                 type="password"
                 autocomplete="off"
                 v-model="newPassword"
-                :rules="[notEmptyRule('New password')]"
+                :rules="[notEmptyRule('New password'), passwordRule()]"
               ></v-text-field>
             </v-card-text>
             <v-card-actions class="justify-center">
@@ -79,7 +79,14 @@ export default {
       notEmptyRule(property) {
         return v => (v && v.length > 0) || `${property} cannot be empty.`
       },
-      validForm: false
+      validForm: false,
+      passwordRule() {
+        return v =>
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*<>])(?=.{8,64})(?=.\S*$)/.test(
+            v
+          ) ||
+          'Password must contain 1 Uppercase, 1 Lowercase, 1 Number, 1 Special Character, a minimum of 8 characters in total, and no white spaces.'
+      }
     }
   },
   methods: {
