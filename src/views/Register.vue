@@ -67,6 +67,7 @@
                       dense
                     ></v-text-field>
                     <v-btn
+                      class="mb-2"
                       color="primary"
                       type="submit"
                       :loading="btnLoading"
@@ -74,6 +75,20 @@
                       rounded
                       >Register</v-btn
                     >
+
+                    <v-divider class="ma-2"></v-divider>
+
+                    <div class="subtitle-2 grey--text text--darken-2 mt-2">
+                      This site is protected by reCAPTCHA and the Google
+                      <a href="https://policies.google.com/privacy"
+                        >Privacy Policy</a
+                      >
+                      and
+                      <a href="https://policies.google.com/terms"
+                        >Terms of Service</a
+                      >
+                      apply.
+                    </div>
                   </v-form>
                 </v-card-text>
               </v-card>
@@ -163,19 +178,42 @@ export default {
     }
   },
   methods: {
-    validateForm() {
+    async validateForm() {
       // call $validator
       // post to API
       this.btnLoading = true
-      ApiService.post('/account/register', {
-        ...this.accountInfo
-      })
+
+      // send to grecaptcha
+      const rToken = await this.$recaptcha('register')
+
+      ApiService.post('/captcha/v3', { captchaResponse: rToken })
         .then(res => {
-          this.btnLoading = false
-          this.snackbarSuccess = true
-          this.snackbarMessage = res.data.message
+          // only if res msg is Success!
+          // post to register
+          if (res.data.message === 'Success!') {
+            ApiService.post('/account/register', {
+              ...this.accountInfo
+            })
+              .then(res => {
+                this.btnLoading = false
+                this.snackbarSuccess = true
+                this.snackbarMessage = res.data.message
+              })
+              .catch(err => {
+                this.btnLoading = false
+                this.snackbarError = true
+                this.snackbarMessage = err.response.data.message
+              })
+          } else {
+            // other message, smoke frontend
+            this.btnLoading = false
+            this.snackbarSuccess = true
+            this.snackbarMessage = res.data.message
+          }
         })
         .catch(err => {
+          // Google gave backend error
+          // backend return 400 Bad Request
           this.btnLoading = false
           this.snackbarError = true
           this.snackbarMessage = err.response.data.message
