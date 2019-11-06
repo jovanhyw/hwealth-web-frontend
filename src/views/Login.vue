@@ -133,7 +133,7 @@ export default {
       this.btnLoading = true
 
       // send to grecaptcha
-      const rToken = await this.$recaptcha('register')
+      const rToken = await this.$recaptcha('login')
 
       ApiService.post('/captcha/v3', { captchaResponse: rToken })
         .then(res => {
