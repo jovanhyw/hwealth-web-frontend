@@ -139,7 +139,7 @@
           <div align="center" justify="center" class="mt-4">
             <v-form @submit.prevent="editStepsRecord">
               <v-menu
-                v-model="menu"
+                v-model="menuEditDialogDatePicker"
                 :close-on-content-click="false"
                 :nudge-right="40"
                 transition="scale-transition"
@@ -276,7 +276,8 @@ export default {
       editDialogData: null,
       deleteDialog: false,
       deleteDialogData: null,
-      loading: true
+      loading: true,
+      menuEditDialogDatePicker: false
     }
   },
   methods: {
