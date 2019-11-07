@@ -7,11 +7,13 @@
         </v-col>
         <v-spacer></v-spacer>
         <v-col align="end">
-          <v-btn dark color="primary" @click="newRecordDialog = true">Add New Record</v-btn>
+          <v-btn dark color="primary" @click="newRecordDialog = true"
+            >Add New Record</v-btn
+          >
         </v-col>
       </v-row>
       <v-divider></v-divider>
-      <br>
+      <br />
       <div align="center" justify="center">
         <v-progress-circular
           :indeterminate="loading"
@@ -24,113 +26,123 @@
       <!-- -->
       <template>
         <div align="center" justify="center">
-        <div v-if="records != null">
-          <v-card max-width="70%" class="mb-5 wow" v-for="(record, index) in records" :key="index">
-            <v-container>
-              <v-row cols="10">
-                <v-col cols="4">
-                  <v-card color="#1F7087" dark>
-                    <v-card-title class="headline">
-                      Date
-                      <v-icon class="ml-2">mdi-calendar</v-icon>
-                    </v-card-title>
-                    <v-card-subtitle>
-                      {{
-                      new Date(record.dateRecorded).getDate() +
-                      '-' +
-                      (new Date(record.dateRecorded).getMonth() + 1) +
-                      '-' +
-                      new Date(record.dateRecorded).getFullYear()
-                      }}
-                    </v-card-subtitle>
-                  </v-card>
-                </v-col>
-                <v-col cols="4">
-                  <v-card color="#385F73" dark>
-                    <v-card-title class="headline">
-                      Meal Type
-                      <v-icon class="ml-2">mdi-food</v-icon>
-                    </v-card-title>
+          <div v-if="records != null">
+            <v-card
+              max-width="70%"
+              class="mb-5 wow"
+              v-for="(record, index) in records"
+              :key="index"
+            >
+              <v-container>
+                <v-row cols="10">
+                  <v-col cols="4">
+                    <v-card color="#1F7087" dark>
+                      <v-card-title class="headline">
+                        Date
+                        <v-icon class="ml-2">mdi-calendar</v-icon>
+                      </v-card-title>
+                      <v-card-subtitle>
+                        {{
+                          new Date(record.dateRecorded).getDate() +
+                            '-' +
+                            (new Date(record.dateRecorded).getMonth() + 1) +
+                            '-' +
+                            new Date(record.dateRecorded).getFullYear()
+                        }}
+                      </v-card-subtitle>
+                    </v-card>
+                  </v-col>
+                  <v-col cols="4">
+                    <v-card color="#385F73" dark>
+                      <v-card-title class="headline">
+                        Meal Type
+                        <v-icon class="ml-2">mdi-food</v-icon>
+                      </v-card-title>
 
-                    <v-card-subtitle>{{ record.mealType }}</v-card-subtitle>
-                  </v-card>
-                </v-col>
-                <v-col cols="4">
-                  <v-card color="#922175" dark>
-                    <v-card-title class="headline">
-                      Total Calories
-                      <v-icon class="ml-2">mdi-hospital-box</v-icon>
-                    </v-card-title>
+                      <v-card-subtitle>{{ record.mealType }}</v-card-subtitle>
+                    </v-card>
+                  </v-col>
+                  <v-col cols="4">
+                    <v-card color="#922175" dark>
+                      <v-card-title class="headline">
+                        Total Calories
+                        <v-icon class="ml-2">mdi-hospital-box</v-icon>
+                      </v-card-title>
 
-                    <v-card-subtitle>{{ record.totalCalories }}</v-card-subtitle>
-                  </v-card>
-                </v-col>
-              </v-row>
-              <v-divider></v-divider>
-              <v-data-iterator
-                :items="record.foodEaten"
-                :items-per-page.sync="itemsPerPage"
-                :footer-props="{ itemsPerPageOptions }"
-              >
-                <template v-slot:default="props">
-                  <v-row>
-                    <v-col
-                      v-for="(item, itemIndex) in props.items"
-                      :key="itemIndex"
-                      cols="12"
-                      sm="6"
-                      md="4"
-                      lg="3"
-                    >
-                      <v-card>
-                        <v-card-title class="subheading font-weight-bold">
-                          {{
-                          item.foodName
-                          }}
-                        </v-card-title>
-
-                        <v-divider></v-divider>
-
-                        <v-list dense>
-                          <v-list-item>
-                            <v-list-item-content>Calories:</v-list-item-content>
-                            <v-list-item-content class="align-end">
-                              {{
-                              item.calories
-                              }}
-                            </v-list-item-content>
-                          </v-list-item>
-                        </v-list>
-                      </v-card>
-                    </v-col>
-                  </v-row>
-                  <br />
-                  <v-row class="mt-n6">
-                    <v-col cols="12">
-                      <v-btn
-                        color="error"
-                        class="mr-2 float-right"
-                        @click="deleteCaloriesRecord(record._id)"
+                      <v-card-subtitle>{{
+                        record.totalCalories
+                      }}</v-card-subtitle>
+                    </v-card>
+                  </v-col>
+                </v-row>
+                <v-divider></v-divider>
+                <v-data-iterator
+                  :items="record.foodEaten"
+                  :items-per-page.sync="itemsPerPage"
+                  :footer-props="{ itemsPerPageOptions }"
+                >
+                  <template v-slot:default="props">
+                    <v-row>
+                      <v-col
+                        v-for="(item, itemIndex) in props.items"
+                        :key="itemIndex"
+                        cols="12"
+                        sm="6"
+                        md="4"
+                        lg="3"
                       >
-                        <v-icon>mdi-delete</v-icon>
-                      </v-btn>
-                      <v-btn
-                        color="primary"
-                        class="mr-2 float-right"
-                        @click="updateDialogView(index)"
-                      >
-                        <v-icon>mdi-pencil</v-icon>
-                      </v-btn>
-                    </v-col>
-                  </v-row>
-                </template>
-              </v-data-iterator>
-            </v-container>
-          </v-card>
-        </div>
+                        <v-card>
+                          <v-card-title class="subheading font-weight-bold">
+                            {{ item.foodName }}
+                          </v-card-title>
+
+                          <v-divider></v-divider>
+
+                          <v-list dense>
+                            <v-list-item>
+                              <v-list-item-content
+                                >Calories:</v-list-item-content
+                              >
+                              <v-list-item-content class="align-end">
+                                {{ item.calories }}
+                              </v-list-item-content>
+                            </v-list-item>
+                          </v-list>
+                        </v-card>
+                      </v-col>
+                    </v-row>
+                    <br />
+                    <v-row class="mt-n6">
+                      <v-col cols="12">
+                        <v-btn
+                          color="error"
+                          class="mr-2 float-right"
+                          @click="deleteCaloriesRecord(record._id)"
+                        >
+                          <v-icon>mdi-delete</v-icon>
+                        </v-btn>
+                        <v-btn
+                          color="primary"
+                          class="mr-2 float-right"
+                          @click="updateDialogView(index)"
+                        >
+                          <v-icon>mdi-pencil</v-icon>
+                        </v-btn>
+                      </v-col>
+                    </v-row>
+                  </template>
+                </v-data-iterator>
+              </v-container>
+            </v-card>
+          </div>
         </div>
 
-        <v-snackbar v-model="snackbarSuccess" :timeout="3000" bottom color="success">
+        <v-snackbar
+          v-model="snackbarSuccess"
+          :timeout="3000"
+          bottom
+          color="success"
+        >
           <span>{{ snackbarMessage }}</span>
           <v-btn
             text
@@ -141,10 +153,16 @@
                 snackbarMessage = ''
               }
             "
-          >Close</v-btn>
+            >Close</v-btn
+          >
         </v-snackbar>
 
-        <v-snackbar v-model="snackbarError" :timeout="3000" bottom color="error">
+        <v-snackbar
+          v-model="snackbarError"
+          :timeout="3000"
+          bottom
+          color="error"
+        >
           <span>{{ snackbarMessage }}</span>
           <v-btn
             text
@@ -155,7 +173,8 @@
                 snackbarMessage = ''
               }
             "
-          >Close</v-btn>
+            >Close</v-btn
+          >
         </v-snackbar>
       </template>
       <!-- -->
@@ -172,20 +191,30 @@
             <v-container>
               <v-row>
                 <v-col cols="12" sm="6">
-                  <v-overflow-btn v-model="newRecordMealType" :items="meal_type" label="Meal Type"></v-overflow-btn>
+                  <v-overflow-btn
+                    v-model="newRecordMealType"
+                    :items="meal_type"
+                    label="Meal Type"
+                  ></v-overflow-btn>
                 </v-col>
                 <v-col cols="12" sm="6">
                   <v-btn class="mt-4 float-right error" @click="removeMealRow">
                     <v-icon>mdi-delete</v-icon>
                   </v-btn>
-                  <v-btn class="mt-4 mr-4 float-right primary" @click="addMealRow">
+                  <v-btn
+                    class="mt-4 mr-4 float-right primary"
+                    @click="addMealRow"
+                  >
                     <v-icon>mdi-plus</v-icon>
                   </v-btn>
                 </v-col>
               </v-row>
               <v-row v-for="i in counter" :key="i">
                 <v-col cols="12" sm="6" md="6">
-                  <v-text-field v-model="newRecordFoodEaten[i - 1].foodName" label="Food"></v-text-field>
+                  <v-text-field
+                    v-model="newRecordFoodEaten[i - 1].foodName"
+                    label="Food"
+                  ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6" md="6">
                   <v-text-field
@@ -201,7 +230,9 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-            <v-btn color="blue darken-1" text @click="createCaloriesRecord">Save</v-btn>
+            <v-btn color="blue darken-1" text @click="createCaloriesRecord"
+              >Save</v-btn
+            >
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -216,12 +247,23 @@
           <v-card-text>
             <v-container>
               <div v-if="tempUpdateRecords != null">
-                <v-row v-for="(tempUpdateRecord, index) in tempUpdateRecords[vector].foodEaten" :key="index">
+                <v-row
+                  v-for="(tempUpdateRecord, index) in tempUpdateRecords[vector]
+                    .foodEaten"
+                  :key="index"
+                >
                   <v-col cols="12" sm="6" md="6">
-                    <v-text-field v-model="tempUpdateRecord.foodName" label="Food"></v-text-field>
+                    <v-text-field
+                      v-model="tempUpdateRecord.foodName"
+                      label="Food"
+                    ></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="6">
-                    <v-text-field type="number" v-model.number="tempUpdateRecord.calories" label="Calories"></v-text-field>
+                    <v-text-field
+                      type="number"
+                      v-model.number="tempUpdateRecord.calories"
+                      label="Calories"
+                    ></v-text-field>
                   </v-col>
                 </v-row>
               </div>
@@ -231,7 +273,12 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-            <v-btn color="blue darken-1" text @click="updateCaloriesRecord(vector)">Update</v-btn>
+            <v-btn
+              color="blue darken-1"
+              text
+              @click="updateCaloriesRecord(vector)"
+              >Update</v-btn
+            >
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -342,15 +389,13 @@ export default {
         }
         if (typeof this.newRecordFoodEaten[x].calories != 'number') {
           this.snackbarError = true
-          this.snackbarMessage =
-            'Food calories must be a number type.'
+          this.snackbarMessage = 'Food calories must be a number type.'
           return
         }
         // check positive
         if (Math.sign(this.newRecordFoodEaten[x].calories) == -1) {
           this.snackbarError = true
-          this.snackbarMessage =
-            'Food calories must not be negative.'
+          this.snackbarMessage = 'Food calories must not be negative.'
           return
         }
         if (
@@ -395,17 +440,17 @@ export default {
           return
         }
         console.log(this.tempUpdateRecords[id].foodEaten[x].calories)
-        if (typeof this.tempUpdateRecords[id].foodEaten[x].calories != 'number') {
+        if (
+          typeof this.tempUpdateRecords[id].foodEaten[x].calories != 'number'
+        ) {
           this.snackbarError = true
-          this.snackbarMessage =
-            'Food calories must be a number type.'
+          this.snackbarMessage = 'Food calories must be a number type.'
           return
         }
         // check positive
         if (Math.sign(this.tempUpdateRecords[id].foodEaten[x].calories) == -1) {
           this.snackbarError = true
-          this.snackbarMessage =
-            'Food calories must not be negative.'
+          this.snackbarMessage = 'Food calories must not be negative.'
           return
         }
         if (
