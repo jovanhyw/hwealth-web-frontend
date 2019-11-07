@@ -21,6 +21,15 @@
           color="primary"
           v-if="loading === true"
         ></v-progress-circular>
+
+        <!-- If no records -->
+        <div
+          v-if="loading !== true && records == null"
+          class="title grey--text text--lighten-1 mt-12"
+        >
+          It looks empty here. Click on the 'Add New Record' button to start
+          tracking your calories!
+        </div>
       </div>
 
       <!-- -->
@@ -363,8 +372,6 @@ export default {
             this.records = res.data.records
           } else {
             this.records = null
-            this.snackbarSuccess = true
-            this.snackbarMessage = res.data.message
           }
         })
         .catch(err => {

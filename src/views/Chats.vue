@@ -23,9 +23,9 @@
           v-for="person in professionals"
           :key="person._id"
         >
-          <v-card elevation="4" class="text-center ma-3" color="#F9E9E9">
+          <v-card elevation="4" class="text-center ma-3">
             <v-responsive class="pt-4">
-              <v-avatar size="100" class="grey lighten-2">
+              <v-avatar size="70" class="grey lighten-2">
                 <v-icon style="font-size: 70px">mdi-account-circle</v-icon>
               </v-avatar>
             </v-responsive>
@@ -53,29 +53,27 @@
     </v-container>
 
     <!-- chat component -->
-    <div style="margin-top:10%">
-      <template>
-        <beautiful-chat
-          v-if="participants.length"
-          :participants="participants"
-          :titleImageUrl="titleImageUrl"
-          :onMessageWasSent="onMessageWasSent"
-          :messageList="messageList"
-          :newMessagesCount="newMessagesCount"
-          :isOpen="isChatOpen"
-          :close="closeChat"
-          :icons="icons"
-          :open="openChat"
-          :showEmoji="true"
-          :showTypingIndicator="showTypingIndicator"
-          :colors="colors"
-          :alwaysScrollToBottom="alwaysScrollToBottom"
-          :messageStyling="messageStyling"
-          @onType="handleOnType"
-          @edit="editMessage"
-        />
-      </template>
-    </div>
+    <template>
+      <beautiful-chat
+        v-if="participants.length"
+        :participants="participants"
+        :titleImageUrl="titleImageUrl"
+        :onMessageWasSent="onMessageWasSent"
+        :messageList="messageList"
+        :newMessagesCount="newMessagesCount"
+        :isOpen="isChatOpen"
+        :close="closeChat"
+        :icons="icons"
+        :open="openChat"
+        :showEmoji="true"
+        :showTypingIndicator="showTypingIndicator"
+        :colors="colors"
+        :alwaysScrollToBottom="alwaysScrollToBottom"
+        :messageStyling="messageStyling"
+        @onType="handleOnType"
+        @edit="editMessage"
+      />
+    </template>
     <!-- end of chat component -->
   </div>
 </template>
