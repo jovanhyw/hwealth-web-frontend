@@ -15,8 +15,7 @@ Vue.use(VueReCaptcha, { siteKey: '6LenTcEUAAAAAIeBxuneJHJXb0QWqw55vznSSN3E' }) /
 Vue.config.productionTip = false
 
 // Initialise API URL Path for Axios HTTP calls
-ApiService.init(`https://hwealth.herokuapp.com/api`)
-//ApiService.init(`http://localhost:3000/api/`)
+ApiService.init(process.env.VUE_APP_API_URL)
 ApiService.mountInterceptor()
 
 // If token exists, set header for axios

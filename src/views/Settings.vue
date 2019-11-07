@@ -128,6 +128,37 @@
                         </v-col>
                     </v-row>-->
 
+                    <v-row class="mt-n6">
+                      <v-col cols="12" sm="6">
+                        <v-menu
+                          v-model="menuDatePicker"
+                          :close-on-content-click="false"
+                          :nudge-right="40"
+                          transition="scale-transition"
+                          offset-y
+                          min-width="290px"
+                        >
+                          <template v-slot:activator="{ on }">
+                            <v-text-field
+                              v-model="profile.dateOfBirth"
+                              label="Date Of Birth"
+                              readonly
+                              v-on="on"
+                              outlined
+                              :disabled="editProfileBtn"
+                            ></v-text-field>
+                          </template>
+                          <v-date-picker
+                            v-model="profile.dateOfBirth"
+                            :show-current="
+                              new Date().toISOString().substr(0, 10)
+                            "
+                            @input="menu = false"
+                          ></v-date-picker>
+                        </v-menu>
+                      </v-col>
+                    </v-row>
+
                     <v-row class="mt-n6" v-if="editProfileBtn == true">
                       <v-col cols="12" sm="6">
                         <v-btn
@@ -157,6 +188,85 @@
                           type="submit"
                           :disabled="!validProfileForm"
                           :loading="updateProfileBtn"
+                        >
+                          <v-icon left>mdi-check</v-icon>
+                          <span>Update</span>
+                        </v-btn>
+                      </v-col>
+                    </v-row>
+                  </v-form>
+
+                  <div class="title">BMI</div>
+                  <div class="subtitle-2 grey--text">
+                    Please enter your height in metres and weight in kilograms.
+                  </div>
+                  <v-form @submit.prevent="updateBMI" v-model="validBMIForm">
+                    <v-row v-if="profile.bmi" class="mb-n6">
+                      <v-col cols="12" sm="6">
+                        <v-text-field
+                          v-model="profile.bmi"
+                          label="BMI"
+                          outlined
+                          disabled
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+
+                    <v-row>
+                      <v-col cols="12" sm="6">
+                        <v-text-field
+                          v-model="profile.height"
+                          label="Height"
+                          type="number"
+                          outlined
+                          :disabled="editBMIBtn"
+                          :rules="[notEmptyHeightWeight('Height')]"
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+
+                    <v-row class="mt-n6">
+                      <v-col cols="12" sm="6">
+                        <v-text-field
+                          v-model="profile.weight"
+                          label="Weight"
+                          type="number"
+                          outlined
+                          :disabled="editBMIBtn"
+                          :rules="[notEmptyHeightWeight('Weight')]"
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+
+                    <v-row class="mt-n6" v-if="editBMIBtn === true">
+                      <v-col cols="12" sm="6">
+                        <v-btn
+                          color="primary"
+                          class="ma-1"
+                          @click="editBMIBtn = !editBMIBtn"
+                        >
+                          <v-icon left>mdi-pencil</v-icon>
+                          <span>Edit</span>
+                        </v-btn>
+                      </v-col>
+                    </v-row>
+
+                    <v-row class="mt-n6" v-else>
+                      <v-col cols="12" sm="6">
+                        <v-btn
+                          color="error"
+                          class="ma-1"
+                          @click="editBMIBtn = !editBMIBtn"
+                        >
+                          <v-icon left>mdi-cancel</v-icon>
+                          <span>Cancel</span>
+                        </v-btn>
+                        <v-btn
+                          color="success"
+                          class="ma-1"
+                          type="submit"
+                          :disabled="!validBMIForm"
+                          :loading="updateBMIBtn"
                         >
                           <v-icon left>mdi-check</v-icon>
                           <span>Update</span>
@@ -480,7 +590,15 @@ export default {
       emailRule() {
         return v => /.+@.+\..+/.test(v) || 'E-mail must be valid.'
       },
-      validProfileForm: false
+      notEmptyHeightWeight(property) {
+        return v =>
+          (!!v && v > 0) || `${property} cannot be empty or less than 0.`
+      },
+      validProfileForm: false,
+      menuDatePicker: false,
+      editBMIBtn: true,
+      validBMIForm: false,
+      updateBMIBtn: false
     }
   },
   methods: {
@@ -500,6 +618,13 @@ export default {
             this.profile.dateOfBirth = this.$options.filters.formatDOB(
               this.profile.dateOfBirth
             )
+          }
+          if (res.data.profile.height) {
+            this.profile.height = res.data.profile.height
+          }
+
+          if (res.data.profile.weight) {
+            this.profile.weight = res.data.profile.weight
           }
         })
         .catch(() => {
@@ -527,7 +652,8 @@ export default {
     updateProfile() {
       this.updateProfileBtn = true
       ApiService.put('/profile/update-profile', {
-        fullname: this.profile.fullname
+        fullname: this.profile.fullname,
+        dateOfBirth: this.profile.dateOfBirth
       })
         .then(res => {
           this.updateProfileBtn = false
@@ -541,6 +667,27 @@ export default {
           this.snackbarError = true
           this.snackbarMessage = err.response.data.message
           this.editProfileBtn = true
+          this.getProfile()
+        })
+    },
+    updateBMI() {
+      this.updateBMIBtn = true
+      ApiService.put('/profile/update-bmi', {
+        weight: this.profile.weight,
+        height: this.profile.height
+      })
+        .then(res => {
+          this.updateBMIBtn = false
+          this.snackbarSuccess = true
+          this.snackbarMessage = res.data.message
+          this.editBMIBtn = true
+          this.getProfile()
+        })
+        .catch(err => {
+          this.updateBMIBtn = false
+          this.snackbarError = true
+          this.snackbarMessage = err.response.data.message
+          this.editBMIBtn = true
           this.getProfile()
         })
     },
@@ -700,7 +847,7 @@ export default {
         })
     }
   },
-  created() {
+  async created() {
     this.getAccount()
     this.getProfile()
   }
