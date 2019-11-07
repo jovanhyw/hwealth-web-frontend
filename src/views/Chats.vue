@@ -170,8 +170,8 @@ export default {
             this.professionals = temp_professionals
           }
         })
-        .catch(err => {
-          console.log(err)
+        .catch(() => {
+          
         })
     },
 
@@ -181,8 +181,7 @@ export default {
         .then(res => {
           this.allConversation = res.data.allConversation
         })
-        .catch(err => {
-          console.log(err)
+        .catch(() => {
         })
     },
 
@@ -230,8 +229,7 @@ export default {
               this.messageList.push(messageObj)
             }
           })
-          .catch(err => {
-            console.log(err)
+          .catch(() => {
           })
       }
     },
@@ -242,11 +240,9 @@ export default {
         message: text.data.text
       }
       ApiService.post('/message', data)
-        .then(res => {
-          console.log(res)
+        .then(() => {
         })
-        .catch(err => {
-          console.log(err)
+        .catch(() => {
         })
     },
 
@@ -267,7 +263,6 @@ export default {
       // called when the user sends a message
       this.sendMessageToApi(message)
       this.messageList = [...this.messageList, message]
-      console.log(this.messageList)
       // -- populate to the chat
     },
     openChat() {

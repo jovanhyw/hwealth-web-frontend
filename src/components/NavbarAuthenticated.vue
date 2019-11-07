@@ -110,7 +110,7 @@ export default {
       this.$store
         .dispatch(LOGOUT)
         .then(() => this.$router.push({ name: 'home' }))
-        .catch(err => console.log(err))
+        .catch(()=> {})
     }
   }
 }
