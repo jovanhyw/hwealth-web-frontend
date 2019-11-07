@@ -15,7 +15,14 @@
 
       <!-- card component -->
       <v-row>
-        <v-col cols="12" sm="6" md="4" lg="3" v-for="person in professionals" :key="person._id">
+        <v-col
+          cols="12"
+          sm="6"
+          md="4"
+          lg="3"
+          v-for="person in professionals"
+          :key="person._id"
+        >
           <v-card elevation="4" class="text-center ma-3" color="#F9E9E9">
             <v-responsive class="pt-4">
               <v-avatar size="100" class="grey lighten-2">
@@ -23,7 +30,9 @@
               </v-avatar>
             </v-responsive>
             <v-card-text>
-              <div class="title text-center black--text">{{ person.fullname }}</div>
+              <div class="title text-center black--text">
+                {{ person.fullname }}
+              </div>
               <div class="black--text text-capitalize">{{ person.role }}</div>
 
               <div align="center" justify="center" class="mt-2">
@@ -45,31 +54,30 @@
 
     <!-- chat component -->
     <div style="margin-top:10%">
-    <template>
-      <beautiful-chat
-        v-if="participants.length"
-        :participants="participants"
-        :titleImageUrl="titleImageUrl"
-        :onMessageWasSent="onMessageWasSent"
-        :messageList="messageList"
-        :newMessagesCount="newMessagesCount"
-        :isOpen="isChatOpen"
-        :close="closeChat"
-        :icons="icons"
-        :open="openChat"
-        :showEmoji="true"
-        :showTypingIndicator="showTypingIndicator"
-        :colors="colors"
-        :alwaysScrollToBottom="alwaysScrollToBottom"
-        :messageStyling="messageStyling"
-        @onType="handleOnType"
-        @edit="editMessage"
-      />
-    </template>
+      <template>
+        <beautiful-chat
+          v-if="participants.length"
+          :participants="participants"
+          :titleImageUrl="titleImageUrl"
+          :onMessageWasSent="onMessageWasSent"
+          :messageList="messageList"
+          :newMessagesCount="newMessagesCount"
+          :isOpen="isChatOpen"
+          :close="closeChat"
+          :icons="icons"
+          :open="openChat"
+          :showEmoji="true"
+          :showTypingIndicator="showTypingIndicator"
+          :colors="colors"
+          :alwaysScrollToBottom="alwaysScrollToBottom"
+          :messageStyling="messageStyling"
+          @onType="handleOnType"
+          @edit="editMessage"
+        />
+      </template>
     </div>
     <!-- end of chat component -->
   </div>
-
 </template>
 
 <script>
