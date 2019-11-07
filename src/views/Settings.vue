@@ -220,7 +220,10 @@
                           type="number"
                           outlined
                           :disabled="editBMIBtn"
-                          :rules="[notEmptyHeightWeight('Height')]"
+                          :rules="[
+                            notEmptyHeightWeight('Height'),
+                            heightRule()
+                          ]"
                         ></v-text-field>
                       </v-col>
                     </v-row>
@@ -589,6 +592,9 @@ export default {
       },
       emailRule() {
         return v => /.+@.+\..+/.test(v) || 'E-mail must be valid.'
+      },
+      heightRule() {
+        return v => /^[0-2]{1}\.\d{1,2}$/.test(v) || 'Height is not valid.'
       },
       notEmptyHeightWeight(property) {
         return v =>
