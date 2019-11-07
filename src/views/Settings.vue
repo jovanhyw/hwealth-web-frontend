@@ -608,7 +608,7 @@ export default {
           this.username = res.data.account.username
           this.email = res.data.account.email
         })
-        .catch(() => console.log('Failed to get account details.'))
+        .catch(() => {})
     },
     getProfile() {
       ApiService.get('/profile')
@@ -627,9 +627,7 @@ export default {
             this.profile.weight = res.data.profile.weight
           }
         })
-        .catch(() => {
-          console.log('Failed to get profile details.')
-        })
+        .catch(() => {})
     },
     updateEmail() {
       this.updateAccountBtn = true

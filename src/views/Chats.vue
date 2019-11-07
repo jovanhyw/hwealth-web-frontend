@@ -177,9 +177,7 @@ export default {
             this.professionals = temp_professionals
           }
         })
-        .catch(() => {
-          
-        })
+        .catch(() => {})
     },
 
     // get all conversations
@@ -188,8 +186,7 @@ export default {
         .then(res => {
           this.allConversation = res.data.allConversation
         })
-        .catch(() => {
-        })
+        .catch(() => {})
     },
 
     getConversationId(accountId) {
@@ -236,8 +233,7 @@ export default {
               this.messageList.push(messageObj)
             }
           })
-          .catch(() => {
-          })
+          .catch(() => {})
       }
     },
 
@@ -247,10 +243,8 @@ export default {
         message: text.data.text
       }
       ApiService.post('/message', data)
-        .then(() => {
-        })
-        .catch(() => {
-        })
+        .then(() => {})
+        .catch(() => {})
     },
 
     // library function
@@ -285,9 +279,7 @@ export default {
       // called when the user scrolls message list to top
       // leverage pagination for loading another page of messages
     },
-    handleOnType() {
-      //console.log('Emit typing event')
-    },
+    handleOnType() {},
     editMessage(message) {
       const m = this.messageList.find(m => m.id === message.id)
       m.isEdited = true

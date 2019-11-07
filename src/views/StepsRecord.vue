@@ -288,7 +288,6 @@ export default {
           this.loading = false
         })
         .catch(() => {
-          console.log('Failed to retrieve steps record.')
           this.loading = false
         })
     },
