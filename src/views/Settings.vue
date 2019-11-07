@@ -128,6 +128,37 @@
                         </v-col>
                     </v-row>-->
 
+                    <v-row class="mt-n6">
+                      <v-col cols="12" sm="6">
+                        <v-menu
+                          v-model="menuDatePicker"
+                          :close-on-content-click="false"
+                          :nudge-right="40"
+                          transition="scale-transition"
+                          offset-y
+                          min-width="290px"
+                        >
+                          <template v-slot:activator="{ on }">
+                            <v-text-field
+                              v-model="profile.dateOfBirth"
+                              label="Date Of Birth"
+                              readonly
+                              v-on="on"
+                              outlined
+                              :disabled="editProfileBtn"
+                            ></v-text-field>
+                          </template>
+                          <v-date-picker
+                            v-model="profile.dateOfBirth"
+                            :show-current="
+                              new Date().toISOString().substr(0, 10)
+                            "
+                            @input="menu = false"
+                          ></v-date-picker>
+                        </v-menu>
+                      </v-col>
+                    </v-row>
+
                     <v-row class="mt-n6" v-if="editProfileBtn == true">
                       <v-col cols="12" sm="6">
                         <v-btn
@@ -480,7 +511,8 @@ export default {
       emailRule() {
         return v => /.+@.+\..+/.test(v) || 'E-mail must be valid.'
       },
-      validProfileForm: false
+      validProfileForm: false,
+      menuDatePicker: false
     }
   },
   methods: {
@@ -527,7 +559,8 @@ export default {
     updateProfile() {
       this.updateProfileBtn = true
       ApiService.put('/profile/update-profile', {
-        fullname: this.profile.fullname
+        fullname: this.profile.fullname,
+        dateOfBirth: this.profile.dateOfBirth
       })
         .then(res => {
           this.updateProfileBtn = false
