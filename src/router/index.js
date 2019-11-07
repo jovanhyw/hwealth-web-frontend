@@ -114,7 +114,8 @@ const routes = [
   {
     path: '/chats/',
     name: 'chats',
-    component: () => import('@/views/Chats')
+    component: () => import('@/views/Chats'),
+    meta: { hideNavigation: true }
   },
   {
     // For any other routes that dont exist, redirect to /
