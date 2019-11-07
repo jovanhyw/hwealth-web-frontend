@@ -1,53 +1,50 @@
 <template>
   <div class="chats">
     <v-container fluid>
-      <h1>Chats</h1>
+      <h1 class="headline ma-4">Chats</h1>
       <v-divider></v-divider>
-      <br />
+
+      <div align="center" justify="center">
+        <v-progress-circular
+          :indeterminate="loading"
+          class="mt-12"
+          color="primary"
+          v-if="loading === true"
+        ></v-progress-circular>
+      </div>
 
       <!-- card component -->
       <v-row>
-        <v-col
-          sm="6"
-          md="4"
-          lg="3"
-          v-for="person in professionals"
-          :key="person._id"
-        >
-          <v-card class="text-center ma-3" color="#F9E9E9">
+        <v-col cols="12" sm="6" md="4" lg="3" v-for="person in professionals" :key="person._id">
+          <v-card elevation="4" class="text-center ma-3" color="#F9E9E9">
             <v-responsive class="pt-4">
-              <v-avatar size="100" class="grey lighten-2" center>
-                <img :src="person.avatar" />
+              <v-avatar size="100" class="grey lighten-2">
+                <v-icon style="font-size: 70px">mdi-account-circle</v-icon>
               </v-avatar>
             </v-responsive>
             <v-card-text>
-              <div class="title text-center black--text">
-                {{ person.fullname }}
-              </div>
-              <div class="grey--text">{{ person.role }}</div>
-            </v-card-text>
-            <v-card-actions class="text-center">
-              <div>
-                <v-btn color="green white--text" class="pr-4">
-                  <v-icon small left>mdi-human</v-icon>
-                  <span class="">Profile</span>
-                </v-btn>
+              <div class="title text-center black--text">{{ person.fullname }}</div>
+              <div class="black--text text-capitalize">{{ person.role }}</div>
+
+              <div align="center" justify="center" class="mt-2">
                 <v-btn
                   color="primary"
-                  class="pr-4"
+                  dark
+                  route
                   @click="getAllMessages(person._id, person.fullname)"
                 >
                   <v-icon small left>mdi-message</v-icon>
-                  <span class="">Message</span>
+                  <span class>Message</span>
                 </v-btn>
               </div>
-            </v-card-actions>
+            </v-card-text>
           </v-card>
         </v-col>
       </v-row>
     </v-container>
 
     <!-- chat component -->
+    <div style="margin-top:10%">
     <template>
       <beautiful-chat
         v-if="participants.length"
@@ -69,8 +66,10 @@
         @edit="editMessage"
       />
     </template>
+    </div>
     <!-- end of chat component -->
   </div>
+
 </template>
 
 <script>
@@ -88,6 +87,7 @@ export default {
       professionals: [],
       allConversation: [],
       messages: [],
+      loading: true,
 
       // library data
       icons: {
@@ -117,11 +117,11 @@ export default {
       showTypingIndicator: '', // when set to a value matching the participant.id it shows the typing indicator for the specific user
       colors: {
         header: {
-          bg: '#4e8cff',
+          bg: '#6200ea',
           text: '#ffffff'
         },
         launcher: {
-          bg: '#4e8cff'
+          bg: '#6200ea'
         },
         messageList: {
           bg: '#ffffff'
@@ -152,8 +152,9 @@ export default {
 
     // get professional profile
     getProfessionalsProfile() {
-      ApiService.get('/profile/professionals')
+      ApiService.get('/profile/getChatUsers')
         .then(res => {
+          this.loading = false
           let result = res.data.professionals
           let temp_professionals = []
           if (result) {
@@ -294,3 +295,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.v-card {
+  background-image: url('/img/doc-card.png');
+}
+</style>

@@ -1,19 +1,33 @@
 <template>
   <div class="calories-record">
     <v-container fluid>
-      <h1>Calories Record</h1>
+      <v-row align="center" justify="center">
+        <v-col>
+          <h1 class="headline ma-4">Calories Record</h1>
+        </v-col>
+        <v-spacer></v-spacer>
+        <v-col align="end">
+          <v-btn dark color="primary" @click="newRecordDialog = true">Add New Record</v-btn>
+        </v-col>
+      </v-row>
       <v-divider></v-divider>
-      <br />
+      <br>
+      <div align="center" justify="center">
+        <v-progress-circular
+          :indeterminate="loading"
+          class="mt-12"
+          color="primary"
+          v-if="loading === true"
+        ></v-progress-circular>
+      </div>
 
       <!-- -->
       <template>
-        <v-btn color="primary" dark class="mb-6" @click="newRecordDialog = true"
-          >new record</v-btn
-        >
+        <div align="center" justify="center">
         <div v-if="records != null">
-          <v-card class="mb-5" v-for="(record, index) in records" :key="index">
+          <v-card max-width="70%" class="mb-5 wow" v-for="(record, index) in records" :key="index">
             <v-container>
-              <v-row>
+              <v-row cols="10">
                 <v-col cols="4">
                   <v-card color="#1F7087" dark>
                     <v-card-title class="headline">
@@ -22,11 +36,11 @@
                     </v-card-title>
                     <v-card-subtitle>
                       {{
-                        new Date(record.dateRecorded).getDate() +
-                          '-' +
-                          (new Date(record.dateRecorded).getMonth() + 1) +
-                          '-' +
-                          new Date(record.dateRecorded).getFullYear()
+                      new Date(record.dateRecorded).getDate() +
+                      '-' +
+                      (new Date(record.dateRecorded).getMonth() + 1) +
+                      '-' +
+                      new Date(record.dateRecorded).getFullYear()
                       }}
                     </v-card-subtitle>
                   </v-card>
@@ -48,9 +62,7 @@
                       <v-icon class="ml-2">mdi-hospital-box</v-icon>
                     </v-card-title>
 
-                    <v-card-subtitle>
-                      {{ record.totalCalories }}
-                    </v-card-subtitle>
+                    <v-card-subtitle>{{ record.totalCalories }}</v-card-subtitle>
                   </v-card>
                 </v-col>
               </v-row>
@@ -71,18 +83,22 @@
                       lg="3"
                     >
                       <v-card>
-                        <v-card-title class="subheading font-weight-bold">{{
+                        <v-card-title class="subheading font-weight-bold">
+                          {{
                           item.foodName
-                        }}</v-card-title>
+                          }}
+                        </v-card-title>
 
                         <v-divider></v-divider>
 
                         <v-list dense>
                           <v-list-item>
                             <v-list-item-content>Calories:</v-list-item-content>
-                            <v-list-item-content class="align-end">{{
+                            <v-list-item-content class="align-end">
+                              {{
                               item.calories
-                            }}</v-list-item-content>
+                              }}
+                            </v-list-item-content>
                           </v-list-item>
                         </v-list>
                       </v-card>
@@ -112,13 +128,9 @@
             </v-container>
           </v-card>
         </div>
+        </div>
 
-        <v-snackbar
-          v-model="snackbarSuccess"
-          :timeout="3000"
-          bottom
-          color="success"
-        >
+        <v-snackbar v-model="snackbarSuccess" :timeout="3000" bottom color="success">
           <span>{{ snackbarMessage }}</span>
           <v-btn
             text
@@ -129,16 +141,10 @@
                 snackbarMessage = ''
               }
             "
-            >Close</v-btn
-          >
+          >Close</v-btn>
         </v-snackbar>
 
-        <v-snackbar
-          v-model="snackbarError"
-          :timeout="3000"
-          bottom
-          color="error"
-        >
+        <v-snackbar v-model="snackbarError" :timeout="3000" bottom color="error">
           <span>{{ snackbarMessage }}</span>
           <v-btn
             text
@@ -149,8 +155,7 @@
                 snackbarMessage = ''
               }
             "
-            >Close</v-btn
-          >
+          >Close</v-btn>
         </v-snackbar>
       </template>
       <!-- -->
@@ -167,34 +172,25 @@
             <v-container>
               <v-row>
                 <v-col cols="12" sm="6">
-                  <v-overflow-btn
-                    v-model="newRecordMealType"
-                    :items="meal_type"
-                    label="Meal Type"
-                  ></v-overflow-btn>
+                  <v-overflow-btn v-model="newRecordMealType" :items="meal_type" label="Meal Type"></v-overflow-btn>
                 </v-col>
                 <v-col cols="12" sm="6">
                   <v-btn class="mt-4 float-right error" @click="removeMealRow">
                     <v-icon>mdi-delete</v-icon>
                   </v-btn>
-                  <v-btn
-                    class="mt-4 mr-4 float-right primary"
-                    @click="addMealRow"
-                  >
+                  <v-btn class="mt-4 mr-4 float-right primary" @click="addMealRow">
                     <v-icon>mdi-plus</v-icon>
                   </v-btn>
                 </v-col>
               </v-row>
               <v-row v-for="i in counter" :key="i">
                 <v-col cols="12" sm="6" md="6">
-                  <v-text-field
-                    v-model="newRecordFoodEaten[i - 1].foodName"
-                    label="Food"
-                  ></v-text-field>
+                  <v-text-field v-model="newRecordFoodEaten[i - 1].foodName" label="Food"></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6" md="6">
                   <v-text-field
-                    v-model="newRecordFoodEaten[i - 1].calories"
+                    type="number"
+                    v-model.number="newRecordFoodEaten[i - 1].calories"
                     label="Calories"
                   ></v-text-field>
                 </v-col>
@@ -205,9 +201,7 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-            <v-btn color="blue darken-1" text @click="createCaloriesRecord"
-              >Save</v-btn
-            >
+            <v-btn color="blue darken-1" text @click="createCaloriesRecord">Save</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -221,22 +215,13 @@
 
           <v-card-text>
             <v-container>
-              <div v-if="records != null">
-                <v-row
-                  v-for="(record, index) in records[vector].foodEaten"
-                  :key="index"
-                >
+              <div v-if="tempUpdateRecords != null">
+                <v-row v-for="(tempUpdateRecord, index) in tempUpdateRecords[vector].foodEaten" :key="index">
                   <v-col cols="12" sm="6" md="6">
-                    <v-text-field
-                      v-model="record.foodName"
-                      label="Food"
-                    ></v-text-field>
+                    <v-text-field v-model="tempUpdateRecord.foodName" label="Food"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="6">
-                    <v-text-field
-                      v-model="record.calories"
-                      label="Calories"
-                    ></v-text-field>
+                    <v-text-field type="number" v-model.number="tempUpdateRecord.calories" label="Calories"></v-text-field>
                   </v-col>
                 </v-row>
               </div>
@@ -246,12 +231,7 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-            <v-btn
-              color="blue darken-1"
-              text
-              @click="updateCaloriesRecord(vector)"
-              >Update</v-btn
-            >
+            <v-btn color="blue darken-1" text @click="updateCaloriesRecord(vector)">Update</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -267,7 +247,8 @@ export default {
     meal_type: ['Breakfast', 'Lunch', 'Dinner', 'Supper'],
     itemsPerPageOptions: [4, 8, 12],
     itemsPerPage: 4,
-
+    loading: true,
+    tempUpdateRecords: null,
     records: null,
     // my data
     updateDialog: false,
@@ -330,10 +311,9 @@ export default {
     getCaloriesRecord() {
       ApiService.get('/calories-record')
         .then(res => {
+          this.loading = false
           if (res.data.records.length > 0) {
             this.records = res.data.records
-            this.snackbarSuccess = true
-            this.snackbarMessage = res.data.message
           } else {
             this.records = null
             this.snackbarSuccess = true
@@ -347,6 +327,7 @@ export default {
     },
     createCaloriesRecord() {
       // validation here not done yet
+
       if (this.newRecordMealType == '') {
         this.snackbarError = true
         this.snackbarMessage = 'Meal type must not be empty.'
@@ -359,8 +340,21 @@ export default {
           this.snackbarMessage = 'Food name must not be empty.'
           return
         }
+        if (typeof this.newRecordFoodEaten[x].calories != 'number') {
+          this.snackbarError = true
+          this.snackbarMessage =
+            'Food calories must be a number type.'
+          return
+        }
+        // check positive
+        if (Math.sign(this.newRecordFoodEaten[x].calories) == -1) {
+          this.snackbarError = true
+          this.snackbarMessage =
+            'Food calories must not be negative.'
+          return
+        }
         if (
-          isNaN(this.newRecordFoodEaten[x].calories) ||
+          !Number.isInteger(this.newRecordFoodEaten[x].calories) ||
           this.newRecordFoodEaten[x].calories == ''
         ) {
           this.snackbarError = true
@@ -392,15 +386,31 @@ export default {
     updateCaloriesRecord(id) {
       // check if values not empty
       // check if calories is not digit
-      for (var x in this.records[id].foodEaten) {
-        if (this.records[id].foodEaten[x].foodName == '') {
+      console.log(this.tempUpdateRecords[id])
+      for (var x in this.tempUpdateRecords[id].foodEaten) {
+        console.log(this.tempUpdateRecords[id].foodEaten[x].foodName)
+        if (this.tempUpdateRecords[id].foodEaten[x].foodName == '') {
           this.snackbarError = true
           this.snackbarMessage = 'Food name must not be empty.'
           return
         }
+        console.log(this.tempUpdateRecords[id].foodEaten[x].calories)
+        if (typeof this.tempUpdateRecords[id].foodEaten[x].calories != 'number') {
+          this.snackbarError = true
+          this.snackbarMessage =
+            'Food calories must be a number type.'
+          return
+        }
+        // check positive
+        if (Math.sign(this.tempUpdateRecords[id].foodEaten[x].calories) == -1) {
+          this.snackbarError = true
+          this.snackbarMessage =
+            'Food calories must not be negative.'
+          return
+        }
         if (
-          isNaN(this.records[id].foodEaten[x].calories) ||
-          this.records[id].foodEaten[x].calories == ''
+          !Number.isInteger(this.tempUpdateRecords[id].foodEaten[x].calories) ||
+          this.tempUpdateRecords[id].foodEaten[x].calories == ''
         ) {
           this.snackbarError = true
           this.snackbarMessage =
@@ -408,9 +418,9 @@ export default {
           return
         }
       }
-      const url = 'calories-record/' + this.records[id]._id
+      const url = 'calories-record/' + this.tempUpdateRecords[id]._id
       const data = {
-        foodEaten: this.records[id].foodEaten
+        foodEaten: this.tempUpdateRecords[id].foodEaten
       }
       ApiService.put(url, data)
         .then(res => {
@@ -440,6 +450,7 @@ export default {
     },
 
     updateDialogView(id) {
+      this.tempUpdateRecords = this.records
       this.vector = id
       this.updateDialog = true
     },
@@ -478,5 +489,9 @@ export default {
 <style scoped>
 .float-right {
   float: right;
+}
+.wow {
+  border-left: 4px solid #6200ea;
+  border-radius: 20px;
 }
 </style>
